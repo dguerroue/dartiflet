@@ -2,6 +2,8 @@
 
 Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
+Tailwindcss UI Kit: [Hyper UI](https://www.hyperui.dev/)
+
 ## Setup
 
 Make sure to install the dependencies:

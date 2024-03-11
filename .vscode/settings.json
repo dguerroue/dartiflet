@@ -6,17 +6,18 @@
   "peacock.affectTabActiveBorder": true,
   "peacock.affectStatusBar": false,
   "peacock.affectActivityBar": false,
-  "workbench.colorCustomizations": {
-    "sash.hoverBorder": "#e83f41",
-    "commandCenter.border": "#e7e7e799",
-    "titleBar.activeBackground": "#da1a1c",
-    "titleBar.activeForeground": "#e7e7e7",
-    "titleBar.inactiveBackground": "#da1a1c99",
-    "tab.activeBorder": "#e83f41",
-    "titleBar.inactiveForeground": "#e7e7e799"
-  },
   "css.customData": [
     ".vscode/tailwind.json"
   ],
-  "peacock.color": "#DA1A1C"
+  "peacock.color": "#DA1A1C",
+  "workbench.colorCustomizations": {
+    "commandCenter.border": "#e7e7e799",
+    "sash.hoverBorder": "#e83f41",
+    "tab.activeBorder": "#e83f41",
+    "titleBar.activeBackground": "#da1a1c",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveBackground": "#da1a1c99",
+    "titleBar.inactiveForeground": "#e7e7e799"
+  },
+  "peacock.remoteColor": "DA1A1C"
 }
