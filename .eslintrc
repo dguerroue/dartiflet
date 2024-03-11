@@ -1,0 +1,85 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": [
+        "plugin:vue/vue3-recommended",
+        "plugin:tailwindcss/recommended"
+    ],
+    "overrides": [
+        {
+            "env": {
+                "node": true
+            },
+            "files": [
+                ".eslintrc.{js,cjs}"
+            ],
+            "parserOptions": {
+                "sourceType": "script"
+            }
+        }
+    ],
+    "parser": "vue-eslint-parser",
+    "parserOptions": {
+        "parser": "@typescript-eslint/parser",
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "plugins": ["vue"],
+    "rules": {
+        "indent": [
+            "error", 4
+        ],
+        "no-unused-vars": "off",
+        "tailwindcss/no-custom-classname": "off",
+        "vue/first-attribute-linebreak": [
+            "error", {
+                "singleline": "beside",
+                "multiline": "beside"
+            }
+        ],
+        "vue/html-closing-bracket-newline": [
+            "error", {
+                "singleline": "never",
+                "multiline": "never"
+            }
+        ],
+        "vue/html-indent": [
+            "error", 4
+        ],
+        "vue/html-self-closing": ["warn", {
+            "html": {
+              "void": "always",
+              "normal": "never"
+            }
+        }],
+
+        "vue/max-attributes-per-line" : [ "error",
+            {
+                "singleline": {
+                    "max": 4
+                },
+                "multiline": {
+                    "max": 4
+                }
+            }
+        ],
+        "vue/multi-word-component-names": [
+            "off"
+        ],
+        "vue/no-v-html": [
+            "off"
+        ],
+        "vue/require-default-prop": [ "off" ],
+        // "vue/singleline-html-element-content-newline": ["error", {
+        //     // "ignores": ["pre", "textarea", "option", "label", "h1", "h2", "h3"]
+        // }],
+        // "vue/multiline-html-element-content-newline": [
+        //     "error", {
+        //         "ignores": [ "select", "option", "span", "pre" ],
+        //         "allowEmptyLines": true
+        //     }
+        // ]
+    }
+}
