@@ -18,6 +18,7 @@ export const usePlayerStore = defineStore('players', () => {
     function removePlayer(id: number) {
         players.value = players.value.filter(player => player.id != id);
     }
+
     return { players, addPlayer, removePlayer }
 }, {
     persist: {
