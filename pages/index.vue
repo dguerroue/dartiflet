@@ -15,7 +15,7 @@
                 <span class="flex items-center justify-between">Reprendre la partie en cours <i>></i></span>
             </div>
 
-            <button :disabled="playerStore.players.length === 0" class="inline-block w-full rounded border border-green-600 bg-green-600 px-12 py-3 text-sm font-medium text-white hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-green-500 disabled:pointer-events-none disabled:border-gray-500 disabled:bg-gray-500" @click="onStartGameButton()">
+            <button :disabled="noPlayers" class="inline-block w-full rounded border border-green-600 bg-green-600 px-12 py-3 text-sm font-medium text-white hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-green-500 disabled:pointer-events-none disabled:border-gray-500 disabled:bg-gray-500" @click="onStartGame()">
                 Demarrer une nouvelle partie
             </button>
         </div>
@@ -28,13 +28,14 @@ definePageMeta({
 });
 
 const playerStore = usePlayerStore();
-
 const gameStore = useGameStore();
 
-function onStartGameButton() {
+const noPlayers = computed(() => playerStore.players.length === 0);
+
+function onStartGame() {
    
     if(playerStore.players.length) {
-        gameStore.newGame(playerStore.players, 'cricket');
+        gameStore.newGame(playerStore.players);
         navigateTo('game')
     }
 }

@@ -13,11 +13,12 @@ export const useGameStore = defineStore('game', () => {
 
     const game = ref<Game|null>(null);
 
-    function newGame(players: Player[], mode: GameMode) {
+    function newGame(
+        players: Player[], params: {mode: GameMode} = {mode: 'cricket'}) {
         game.value = {
             id: 1,
             isStarted: false,
-            mode: mode,
+            mode: params.mode,
             players: players
         }
     }
