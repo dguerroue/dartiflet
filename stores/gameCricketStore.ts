@@ -3,14 +3,14 @@ import { defineStore } from 'pinia'
 export type CricketScore = 'bull' | 20 | 19 | 18 | 17 | 16 | 15;
 
 export const useGameCricketStore = defineStore('gameCricket', () => {
-    const playersScores = reactive<{
+    const playersScores = ref<{
         playerId: number,
         scorePoints: number,
         playerScoreHistory: CricketScore[]
     }[]>([]);
 
     function getScoresByPlayerId(playerId: number) {
-        return playersScores.find(ps => ps.playerId == playerId)
+        return playersScores.value.find(ps => ps.playerId == playerId)
     }
 
     function getScorePointsByPlayerId(playerId: number) {
@@ -25,7 +25,7 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
         const playerScore = getScoresByPlayerId(playerId)
 
         if(playerScore === undefined) {
-            playersScores.push({
+            playersScores.value.push({
                 playerId: playerId,
                 scorePoints: 0,
                 playerScoreHistory: [score]
