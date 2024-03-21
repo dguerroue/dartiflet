@@ -1,12 +1,14 @@
 <template>
-    <div class="flex size-full flex-col gap-2 py-6 dark:text-white">
-        <div class="mb-4 flex flex-col items-center justify-center border-2 py-4 dark:border-white">
-            <span>Alex</span>
-            <span>{{ gameCricketStore.getScorePointsByPlayerId(0) }} pts</span>
-        </div>
-        <!-- Start cricket grid -->
-        <div v-for="score in scores" :key="score" class="cricket_grid-item" @click="playerScore(0, score)">
-            {{ score }} <span class="text-sm text-red-400">{{ gameCricketStore.getScoreStateByPlayerId(0, score) }}</span>
+    <div class="grid grid-cols-2 gap-4">
+        <div v-for="player in gameStore.game?.players" :key="player.id" class="flex size-full flex-col gap-2 py-6 dark:text-white">
+            <div class="mb-4 flex flex-col items-center justify-center border-2 py-4 dark:border-white">
+                <span>{{ player.name }}</span>
+                <span>{{ gameCricketStore.getScorePointsByPlayerId(player.id) }} pts</span>
+            </div>
+            <!-- Start cricket grid -->
+            <div v-for="score in scores" :key="score" class="cricket_grid-item" @click="playerScore(player.id, score)">
+                {{ score }} <span class="text-sm text-red-400">{{ gameCricketStore.getScoreStateByPlayerId(player.id, score) }}</span>
+            </div>
         </div>
     </div>
 </template>

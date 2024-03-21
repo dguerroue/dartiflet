@@ -6,6 +6,7 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
     const playersScores = ref<{
         playerId: number,
         scorePoints: number,
+        scoreOpen: Set<CricketScore>, // TODO: init this to empty a game start
         playerScoreHistory: CricketScore[]
     }[]>([]);
 
@@ -28,18 +29,22 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
             playersScores.value.push({
                 playerId: playerId,
                 scorePoints: 0,
+                scoreOpen: new Set<CricketScore>(),
                 playerScoreHistory: [score]
             })
         } else {
             playerScore.playerScoreHistory.push(score)
 
             // ça score !
+            if(getScoreStateByPlayerId(playerId, score) >= 3) {
+                playerScore.scoreOpen.add(score);
+            }
             if(getScoreStateByPlayerId(playerId, score) > 3) {
                 playerScore.scorePoints += score === 'bull' ? 25 : score
             }
-        }
 
-        console.log(playerScore?.playerScoreHistory)
+            console.log(playerScore)
+        }
 
     }
 
