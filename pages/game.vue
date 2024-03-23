@@ -1,31 +1,52 @@
 <template>
-    <div class="flex size-full grow gap-4 py-6">
-        <!-- SCORE LIST -->
-        <div class="w-1/6">
-            <div class="flex size-full flex-col gap-2 dark:text-white">
-                <div class="mb-4 h-20"></div>
-                <div v-for="score in gameCricketStore.cricketScores" :key="score" class="flex grow items-center justify-center text-2xl font-bold dark:text-white">
-                    {{ score == 25 ? 'B' : score }}
+    <div class="relative flex h-full flex-col">
+        <div v-if="gameStore.winner" class="absolute left-1/2 top-1/2 z-10 flex w-full -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 rounded-lg bg-white py-24 font-bold ">
+            {{ gameStore.winner.name }} a gagné wouhou !
+            <button class="rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700" @click="gameCricketStore.resetGame()">
+                REJOUER !
+            </button>
+        </div>
+        <div class="flex size-full grow gap-4 py-6">
+            <!-- SCORE LIST -->
+            <div class="w-1/6">
+                <div class="flex size-full flex-col gap-2 dark:text-white">
+                    <div class="mb-4 h-20"></div>
+                    <div v-for="score in gameCricketStore.cricketScores" :key="score" class="flex grow items-center justify-center text-2xl font-bold dark:text-white" :class="{'opacity-15': gameCricketStore.checkClosedScore(score)}">
+                        {{ score == 25 ? 'B' : score }}
+                    </div>
+                </div>
+            </div>
+            <!-- PLAYERS SCORES -->
+            <div class="flex w-full gap-4">
+                <div v-for="player in gameStore.game?.players" :key="player.id" class="flex size-full flex-col gap-2 dark:text-white">
+                    <div class="mb-4 flex h-20 w-full rounded-lg text-lg font-bold dark:bg-slate-800">
+                        <div class="flex w-full items-center">
+                            <div class="flex grow flex-col items-center justify-center">
+                                <span class="capitalize">{{ player.name }}</span>
+                                <Transition name="blink" mode="out-in">
+                                    <span :key="gameCricketStore.getScorePointsByPlayerId(player.id)">{{ gameCricketStore.getScorePointsByPlayerId(player.id) }}</span>
+                                </Transition>
+                            </div>
+                            <div class="mx-4 cursor-pointer rounded-lg border-2 border-slate-300 p-3 text-base hover:bg-slate-700 active:bg-slate-600" @click="gameCricketStore.wallHit(player.id)">
+                                WALL
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Start cricket grid -->
+                    <div v-for="score in gameCricketStore.cricketScores" :key="score" class="relative flex grow cursor-pointer flex-col items-center justify-center" :class="{'pointer-events-none opacity-15': gameCricketStore.checkClosedScore(score)}"
+                         @click="playerScore(player.id, score)">
+                        <span v-if="gameCricketStore.getCountByScorePlayer(player.id, score) == 0" class="cross-step-0"></span>
+                        <span v-if="gameCricketStore.getCountByScorePlayer(player.id, score) >= 1" class="cross-step-1"></span>
+                        <span v-if="gameCricketStore.getCountByScorePlayer(player.id, score) >= 2" class="cross-step-2"></span>
+                        <span v-if="gameCricketStore.getCountByScorePlayer(player.id, score) >= 3" class="cross-step-3"></span>
+                    </div>
                 </div>
             </div>
         </div>
-        <!-- PLAYERS SCORES -->
-        <div class="grid w-full grid-cols-2 gap-4">
-            <div v-for="player in gameStore.game?.players" :key="player.id" class="flex size-full flex-col gap-2 dark:text-white">
-                <div class="mb-4 flex h-20 flex-col items-center justify-center rounded-lg text-lg font-bold dark:bg-slate-800">
-                    <span class="capitalize">{{ player.name }}</span>
-                    <Transition name="blink" mode="out-in">
-                        <span :key="gameCricketStore.getScorePointsByPlayerId(player.id)">{{ gameCricketStore.getScorePointsByPlayerId(player.id) }}</span>
-                    </Transition>
-                </div>
-                <!-- Start cricket grid -->
-                <div v-for="score in gameCricketStore.cricketScores" :key="score" class="relative flex grow flex-col items-center justify-center" :class="{'pointer-events-none opacity-15': gameCricketStore.checkClosedScore(score)}"
-                     @click="playerScore(player.id, score)">
-                    <span v-if="gameCricketStore.getCountByScorePlayer(player.id, score) == 0" class="cross-step-0"></span>
-                    <span v-if="gameCricketStore.getCountByScorePlayer(player.id, score) >= 1" class="cross-step-1"></span>
-                    <span v-if="gameCricketStore.getCountByScorePlayer(player.id, score) >= 2" class="cross-step-2"></span>
-                    <span v-if="gameCricketStore.getCountByScorePlayer(player.id, score) >= 3" class="cross-step-3"></span>
-                </div>
+        <div class="flex w-full">
+            <div class="w-1/6"></div>
+            <div class="mb-4 flex h-14 grow cursor-pointer flex-col items-center justify-center rounded-lg text-lg font-bold active:bg-slate-600 dark:bg-slate-800 dark:text-white" @click="gameCricketStore.undo()">
+                ANNULER
             </div>
         </div>
     </div>
@@ -40,16 +61,19 @@ definePageMeta({
 const gameStore = useGameStore();
 const gameCricketStore = useGameCricketStore();
 
-// function generateRandomArray(length: number, min: number = 1, max: number = 20): number[] {
-//     const randomArray: number[] = [];
-//     for (let i = 0; i < length; i++) {
-//         const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-//         randomArray.push(randomNumber);
-//     }
-//     return randomArray;
-// }
+function generateRandomArray(length: number, min: number = 1, max: number = 20): number[] {
+    const randomArray: number[] = [];
+    while (randomArray.length < length) {
+        const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
 
-// gameCricketStore.setCricketScore([25, ...generateRandomArray(6)])
+        if(randomArray.indexOf(randomNumber) == -1) {
+            randomArray.push(randomNumber);
+        }
+    }
+    return randomArray.sort(function(a, b){return b-a});
+}
+
+gameCricketStore.setCricketScore([25, ...generateRandomArray(5)])
 
 function playerScore(id:number, score: number) {
     gameCricketStore.pushScore(id, score)
@@ -57,7 +81,6 @@ function playerScore(id:number, score: number) {
 </script>
 
 <style lang="scss" scoped>
-
 
 .cross-step-0,
 .cross-step-1,

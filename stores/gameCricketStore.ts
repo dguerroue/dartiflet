@@ -9,6 +9,8 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
 
     const cricketScores = ref<[number, ...number[]]>(defaultCricketScores);
 
+    const winnerPlayerId = ref<number>()
+
     function setCricketScore(scores: [number, ...number[]]) {
         cricketScores.value = scores;
     }
@@ -18,14 +20,29 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
         value: number,
         state: 1 | 2 | 3
     }
-    
-    const playersScores = ref<{
+
+    type PlayerScore = {
         playerId: number,
         scorePoints: number,
         scoresOpen: number[],
         scoresClose: number[],
         playerScoreHistory: number[]
-    }[]>([]);
+    }
+
+    const playerIdsHistory: number[] = []
+    
+    const playersScores = ref<PlayerScore[]>([]);
+
+    function resetGame() {
+        gameStore.resetGame();
+
+        playersScores.value.forEach(ps => {
+            ps.playerScoreHistory = [];
+            ps.scorePoints = 0;
+            ps.scoresClose = [];
+            ps.scoresOpen = [];
+        })
+    }
 
     function getScoresByPlayerId(playerId: number) {
         return playersScores.value.find(ps => ps.playerId == playerId)
@@ -56,35 +73,86 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
         return numberOfOpenScore >= numPlayers
     }
 
+    function checkPlayerWin(playerScore: PlayerScore) {
+        if(playerScore.scoresOpen.length === cricketScores.value.length) {
+            const allPlayerScorePoints = playersScores.value.map(ps => ps.scorePoints)
+
+            if(playerScore.scorePoints == Math.max(...allPlayerScorePoints)) {
+                gameStore.setWinner(playerScore.playerId);
+            }
+        }
+    }
+
     function pushScore(playerId: number, score: number) {
-        const playerScore = getScoresByPlayerId(playerId);
+        playerIdsHistory.push(playerId)
         
-        if(playerScore === undefined) {
+        if(getScoresByPlayerId(playerId) === undefined) {
             playersScores.value.push({
                 playerId: playerId,
                 scorePoints: 0,
                 scoresOpen: [],
                 scoresClose: [],
-                playerScoreHistory: [score]
+                playerScoreHistory: []
             })
-        } else {
-            playerScore.playerScoreHistory.push(score)
+        }
 
+        const playerScore = getScoresByPlayerId(playerId);
+        if(playerScore) {
+
+            playerScore.playerScoreHistory.push(score)
+    
             if(checkClosedScore(score) == false) {
         
                 // ça score !
-                if(getCountByScorePlayer(playerId, score) == 3) {
+                if(cricketScores.value.indexOf(score) && getCountByScorePlayer(playerId, score) == 3) {
                     playerScore.scoresOpen.push(score);
                 }
-                if(getCountByScorePlayer(playerId, score) > 3) {
+                if(getCountByScorePlayer(playerId, score) > 3 || cricketScores.value.indexOf(score) == -1) {
                     playerScore.scorePoints += score
                 }
+    
+                checkPlayerWin(playerScore)
             }
         }
 
     }
 
-    return { cricketScores, setCricketScore, playersScores, pushScore, getCountByScorePlayer, checkClosedScore, getScorePointsByPlayerId, getScoresByPlayerId }
+    function wallHit(playerId: number) {
+        pushScore(playerId, -cricketScores.value[1])
+    }
+
+    function undo() {
+        const lastActionPlayerId = playerIdsHistory.pop()
+
+        if(lastActionPlayerId == undefined) {
+            return
+        }
+
+        const playerScores = playersScores.value.find((player) => player.playerId == lastActionPlayerId)
+
+        if(!playerScores) {
+            return
+        }
+        
+        const poppedScore = playerScores.playerScoreHistory.pop()
+
+        
+        if(poppedScore) {
+            if(getCountByScorePlayer(lastActionPlayerId, poppedScore) < 3 && cricketScores.value.indexOf(poppedScore) != -1) {
+                playerScores.scoresOpen = playerScores.scoresOpen.filter(item => item != poppedScore)
+            } else {
+                const playerScore = getScoresByPlayerId(lastActionPlayerId);
+
+                if(playerScore !== undefined) {
+                    playerScore.scorePoints -= poppedScore;
+                }
+    
+            }
+        }
+        
+    }
+
+    return { resetGame, cricketScores, setCricketScore, playersScores, pushScore, wallHit, undo, getCountByScorePlayer, checkClosedScore, getScorePointsByPlayerId, getScoresByPlayerId }
 }, {
     persist: {
         storage: persistedState.localStorage

@@ -13,6 +13,8 @@ export const useGameStore = defineStore('game', () => {
 
     const game = ref<Game|null>(null);
 
+    const winner: Ref<Player|undefined> = ref(undefined);
+
     function newGame(
         players: Player[], params: {mode: GameMode} = {mode: 'cricket'}) {
         game.value = {
@@ -23,7 +25,15 @@ export const useGameStore = defineStore('game', () => {
         }
     }
 
-    return { newGame, game }
+    function setWinner(playerId: number) {
+        winner.value = game.value?.players.find(player => player.id == playerId);
+    }
+
+    function resetGame() {
+        winner.value = undefined
+    }
+
+    return { newGame,resetGame, game, setWinner, winner }
 }, {
     persist: {
         storage: persistedState.localStorage
