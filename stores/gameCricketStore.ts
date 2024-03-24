@@ -104,10 +104,10 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
             if(checkClosedScore(score) == false) {
         
                 // ça score !
-                if(cricketScores.value.indexOf(score) && getCountByScorePlayer(playerId, score) == 3) {
+                if(cricketScores.value.includes(score) && getCountByScorePlayer(playerId, score) == 3) {
                     playerScore.scoresOpen.push(score);
                 }
-                if(getCountByScorePlayer(playerId, score) > 3 || cricketScores.value.indexOf(score) == -1) {
+                if(getCountByScorePlayer(playerId, score) > 3 || !cricketScores.value.includes(score)) {
                     playerScore.scorePoints += score
                 }
     
@@ -138,7 +138,7 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
 
         
         if(poppedScore) {
-            if(getCountByScorePlayer(lastActionPlayerId, poppedScore) < 3 && cricketScores.value.indexOf(poppedScore) != -1) {
+            if(getCountByScorePlayer(lastActionPlayerId, poppedScore) < 3 && cricketScores.value.includes(poppedScore)) {
                 playerScores.scoresOpen = playerScores.scoresOpen.filter(item => item != poppedScore)
             } else {
                 const playerScore = getScoresByPlayerId(lastActionPlayerId);

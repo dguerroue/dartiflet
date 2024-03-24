@@ -63,6 +63,11 @@ const gameCricketStore = useGameCricketStore();
 
 function generateRandomArray(length: number, min: number = 1, max: number = 20): number[] {
     const randomArray: number[] = [];
+
+    if(length > 20) {
+        length = 20
+    }
+    
     while (randomArray.length < length) {
         const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
 
@@ -70,10 +75,11 @@ function generateRandomArray(length: number, min: number = 1, max: number = 20):
             randomArray.push(randomNumber);
         }
     }
+
     return randomArray.sort(function(a, b){return b-a});
 }
 
-gameCricketStore.setCricketScore([25, ...generateRandomArray(5)])
+// gameCricketStore.setCricketScore([25, ...generateRandomArray(5)])
 
 function playerScore(id:number, score: number) {
     gameCricketStore.pushScore(id, score)
