@@ -1,3 +1,4 @@
+import {Howl, Howler} from 'howler';
 import { defineStore } from 'pinia'
 import { useGameStore } from './gameStore';
 
@@ -83,7 +84,7 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
         }
     }
 
-    function pushScore(playerId: number, score: number) {
+    function pushScore(playerId: number, score: number, noSounds: boolean = false) {
         playerIdsHistory.push(playerId)
         
         if(getScoresByPlayerId(playerId) === undefined) {
@@ -99,10 +100,32 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
         const playerScore = getScoresByPlayerId(playerId);
         if(playerScore) {
 
-            playerScore.playerScoreHistory.push(score)
-    
+            playerScore.playerScoreHistory.push(score);
+            
             if(checkClosedScore(score) == false) {
-        
+
+                if(noSounds == false) {
+                    // sounds effects
+                    getCountByScorePlayer(playerId, score)// Wall sound
+                    const dartSound1 = new Howl({ src: '/sounds/dart1.mp3', volume: 0.4});
+                    const dartSound2 = new Howl({ src: '/sounds/dart2.mp3', volume: 0.4});
+                    const dartSound3 = new Howl({ src: '/sounds/dart3.mp3', volume: 0.4});
+                    switch(getCountByScorePlayer(playerId, score)) {
+                    case 1:
+                        dartSound1.play();
+                        break;
+                    case 2:
+                        dartSound2.play();
+                        break;
+                    case 3:
+                        dartSound3.play();
+                    }
+
+                    if(getCountByScorePlayer(playerId, score) > 3) {
+                        dartSound3.play();
+                    }
+                }
+
                 // ça score !
                 if(cricketScores.value.includes(score) && getCountByScorePlayer(playerId, score) == 3) {
                     playerScore.scoresOpen.push(score);
@@ -118,10 +141,19 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
     }
 
     function wallHit(playerId: number) {
-        pushScore(playerId, -cricketScores.value[1])
+        // Wall sound
+        var sound = new Howl({
+            src: '/sounds/turtle_scream.mp3',
+            volume: 2,
+        });
+        sound.play();
+        pushScore(playerId, -cricketScores.value[1], true);
     }
 
     function undo() {
+        
+        const dartSound1 = new Howl({ src: '/sounds/undo.mp3', volume: 0.3}).play();
+
         const lastActionPlayerId = playerIdsHistory.pop()
 
         if(lastActionPlayerId == undefined) {
