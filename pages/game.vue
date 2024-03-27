@@ -1,10 +1,16 @@
 <template>
     <div class="relative flex h-full flex-col">
-        <div v-if="gameStore.winner" class="absolute left-1/2 top-1/2 z-10 flex w-full -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 rounded-lg bg-white py-24 font-bold ">
-            {{ gameStore.winner.name }} a gagné wouhou !
-            <button class="rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700" @click="gameCricketStore.resetGame()">
-                REJOUER !
-            </button>
+        <div v-if="gameStore.winner" class="fixed left-0 top-0 z-10 size-full bg-black/60"></div>
+        <div v-if="gameStore.winner" class="absolute left-1/2 top-1/2 z-20 flex w-full max-w-[400px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 rounded-lg bg-white py-24 font-bold ">
+            {{ gameStore.winner.name }} a gagné la partie !
+            <div class="flex gap-4">
+                <button class="rounded-lg bg-amber-500 px-4 py-2 text-white hover:bg-green-700" @click="/*TODO gameStore.goHome()*/">
+                    MENU
+                </button>
+                <button class="rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700" @click="gameCricketStore.resetGame()">
+                    REJOUER !
+                </button>
+            </div>
         </div>
         <div class="flex size-full grow gap-4 py-6">
             <!-- SCORE LIST -->
@@ -79,7 +85,7 @@ function generateRandomArray(length: number, min: number = 1, max: number = 20):
     return randomArray.sort(function(a, b){return b-a});
 }
 
-// gameCricketStore.setCricketScore([25, ...generateRandomArray(5)])
+// gameCricketStore.setCricketScore([25, ...generateRandomArray(6)])
 
 function playerScore(id:number, score: number) {
     gameCricketStore.pushScore(id, score)

@@ -33,7 +33,11 @@ export const useGameStore = defineStore('game', () => {
         winner.value = undefined
     }
 
-    return { newGame,resetGame, game, setWinner, winner }
+    function goHome() {
+        resetGame();
+    }
+
+    return { goHome, newGame,resetGame, game, setWinner, winner }
 }, {
     persist: {
         storage: persistedState.localStorage

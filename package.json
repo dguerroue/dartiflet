@@ -7,7 +7,8 @@
     "dev": "nuxt dev --host",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/logo.svg"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.5.1",
@@ -21,7 +22,10 @@
     "@nuxtjs/eslint-module": "^4.1.0",
     "@nuxtjs/tailwindcss": "^6.11.4",
     "@pinia-plugin-persistedstate/nuxt": "^1.2.0",
+    "@types/howler": "^2.2.11",
     "@typescript-eslint/parser": "^7.1.1",
+    "@vite-pwa/assets-generator": "^0.2.4",
+    "@vite-pwa/nuxt": "^0.6.0",
     "eslint": "^8.57.0",
     "eslint-plugin-tailwindcss": "^3.14.3",
     "eslint-plugin-vue": "^9.22.0",
