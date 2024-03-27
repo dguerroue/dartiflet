@@ -4,7 +4,8 @@
         <div v-if="gameStore.winner" class="absolute left-1/2 top-1/2 z-20 flex w-full max-w-[400px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 rounded-lg bg-white py-24 font-bold ">
             {{ gameStore.winner.name }} a gagné la partie !
             <div class="flex gap-4">
-                <button class="rounded-lg bg-amber-500 px-4 py-2 text-white hover:bg-green-700" @click="/*TODO gameStore.goHome()*/">
+                <!-- TODO: gameStore.goHome() -->
+                <button class="rounded-lg bg-amber-500 px-4 py-2 text-white hover:bg-green-700">
                     MENU
                 </button>
                 <button class="rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700" @click="gameCricketStore.resetGame()">
