@@ -1,10 +1,17 @@
 import { defineStore } from 'pinia'
 import type { Player } from './playerStore';
 
-export type GameMode = 'cricket' | '501';
+export type GameMode = {
+    mode: string,
+    variants: string[],
+};
+
 export type Game = {
     id: number,
-    mode: GameMode,
+    mode: {
+        mode: string,
+        variant: string,
+    },
     isStarted: boolean,
     players: Player[]
 }
@@ -12,17 +19,36 @@ export type Game = {
 export const useGameStore = defineStore('game', () => {
 
     const game = ref<Game|null>(null);
-
     const winner: Ref<Player|undefined> = ref(undefined);
 
-    function newGame(
-        players: Player[], params: {mode: GameMode} = {mode: 'cricket'}) {
+    const gameModes: GameMode[] = [
+        {
+            mode: 'cricket',
+            variants: ['classic', 'random'],
+        }
+    ];
+
+    function newGame<Mode extends string, Variant extends string>(players: Player[], params: {mode: Mode, variant: Variant}) {
         game.value = {
             id: 1,
             isStarted: false,
-            mode: params.mode,
+            mode: {
+                mode: params.mode,
+                variant: params.variant
+            },
             players: players
         }
+    }
+
+    function startGame() {
+        if(game.value) {
+            game.value.isStarted = true
+        }
+    }
+
+    function endGame() {
+        game.value = null;
+        resetGame();
     }
 
     function setWinner(playerId: number) {
@@ -30,14 +56,13 @@ export const useGameStore = defineStore('game', () => {
     }
 
     function resetGame() {
+        if(game.value) {
+            game.value.isStarted = false
+        }
         winner.value = undefined
     }
 
-    function goHome() {
-        resetGame();
-    }
-
-    return { goHome, newGame,resetGame, game, setWinner, winner }
+    return { newGame, startGame, endGame, resetGame, game, gameModes, setWinner, winner }
 }, {
     persist: {
         storage: persistedState.localStorage

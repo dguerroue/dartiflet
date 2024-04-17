@@ -2,6 +2,7 @@ import {Howl, Howler} from 'howler';
 import { defineStore } from 'pinia'
 import { useGameStore } from './gameStore';
 
+export type CricketVariantModes = 'classic' | 'random'
 
 export const useGameCricketStore = defineStore('gameCricket', () => {
     const gameStore = useGameStore();
@@ -10,11 +11,7 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
 
     const cricketScores = ref<[number, ...number[]]>(defaultCricketScores);
 
-    const winnerPlayerId = ref<number>()
-
-    function setCricketScore(scores: [number, ...number[]]) {
-        cricketScores.value = scores;
-    }
+    const winnerPlayerId = ref<number>();
 
     // TODO: essayer de changer le type de score par ça:
     type Score = {
@@ -33,6 +30,39 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
     const playerIdsHistory: number[] = []
     
     const playersScores = ref<PlayerScore[]>([]);
+
+    function startGame(variant: CricketVariantModes) {
+        if(gameStore.game?.isStarted) {
+            return;
+        }
+        
+        if(variant == 'classic') {
+            cricketScores.value = defaultCricketScores
+        }
+        if(variant == 'random') {
+            function generateRandomArray(length: number, min: number = 1, max: number = 20): number[] {
+                const randomArray: number[] = [];
+            
+                if(length > 20) {
+                    length = 20
+                }
+                
+                while (randomArray.length < length) {
+                    const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+            
+                    if(randomArray.indexOf(randomNumber) == -1) {
+                        randomArray.push(randomNumber);
+                    }
+                }
+            
+                return randomArray.sort(function(a, b){return b-a});
+            }
+    
+            cricketScores.value = [25, ...generateRandomArray(6)]
+        }
+
+        gameStore.startGame();
+    }
 
     function resetGame() {
         gameStore.resetGame();
@@ -184,7 +214,7 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
         
     }
 
-    return { resetGame, cricketScores, setCricketScore, playersScores, pushScore, wallHit, undo, getCountByScorePlayer, checkClosedScore, getScorePointsByPlayerId, getScoresByPlayerId }
+    return { startGame, resetGame, cricketScores, playersScores, pushScore, wallHit, undo, getCountByScorePlayer, checkClosedScore, getScorePointsByPlayerId, getScoresByPlayerId }
 }, {
     persist: {
         storage: persistedState.localStorage

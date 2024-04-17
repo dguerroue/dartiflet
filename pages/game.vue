@@ -5,10 +5,10 @@
             {{ gameStore.winner.name }} a gagné la partie !
             <div class="flex gap-4">
                 <!-- TODO: gameStore.goHome() -->
-                <button class="rounded-lg bg-amber-500 px-4 py-2 text-white hover:bg-green-700">
+                <button class="rounded-lg bg-amber-500 px-4 py-2 text-white hover:bg-green-700" @click="endGame()">
                     MENU
                 </button>
-                <button class="rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700" @click="gameCricketStore.resetGame()">
+                <button class="rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700" @click="replayGame()">
                     REJOUER !
                 </button>
             </div>
@@ -17,7 +17,11 @@
             <!-- SCORE LIST -->
             <div class="w-1/6">
                 <div class="flex size-full flex-col gap-2 dark:text-white">
-                    <div class="mb-4 h-20"></div>
+                    <div class="mb-4 flex h-20 items-center justify-center">
+                        <button class="mx-4 cursor-pointer rounded-lg border-2 border-slate-300 p-3 text-base hover:bg-slate-700 active:bg-slate-600" @click="navigateTo('/')">
+                            HOME
+                        </button>
+                    </div>
                     <div v-for="score in gameCricketStore.cricketScores" :key="score" class="flex grow items-center justify-center text-2xl font-bold dark:text-white" :class="{'opacity-15': gameCricketStore.checkClosedScore(score)}">
                         {{ score == 25 ? 'B' : score }}
                     </div>
@@ -68,28 +72,29 @@ definePageMeta({
 const gameStore = useGameStore();
 const gameCricketStore = useGameCricketStore();
 
-function generateRandomArray(length: number, min: number = 1, max: number = 20): number[] {
-    const randomArray: number[] = [];
-
-    if(length > 20) {
-        length = 20
-    }
-    
-    while (randomArray.length < length) {
-        const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-
-        if(randomArray.indexOf(randomNumber) == -1) {
-            randomArray.push(randomNumber);
-        }
-    }
-
-    return randomArray.sort(function(a, b){return b-a});
-}
-
-// gameCricketStore.setCricketScore([25, ...generateRandomArray(6)])
+if(gameStore.game?.mode.mode == 'cricket') {
+    gameCricketStore.startGame(gameStore.game?.mode.variant as CricketVariantModes)
+};
 
 function playerScore(id:number, score: number) {
     gameCricketStore.pushScore(id, score)
+}
+
+function endGame() {
+    if(gameStore.game?.mode.mode == 'cricket') {
+        gameCricketStore.resetGame();
+    };
+
+    gameStore.endGame();
+
+    navigateTo('/');
+}
+
+function replayGame() {
+    if(gameStore.game?.mode.mode == 'cricket') {
+        gameCricketStore.resetGame();
+        gameCricketStore.startGame(gameStore.game?.mode.variant as CricketVariantModes)
+    };
 }
 </script>
 
