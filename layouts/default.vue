@@ -1,5 +1,5 @@
 <template>
-    <div class="dark:bg-slate-900">
+    <div>
         <div class="container h-dvh">
             <NuxtPwaManifest />
             <NuxtPage />

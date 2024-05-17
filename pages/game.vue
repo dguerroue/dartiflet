@@ -1,12 +1,16 @@
 <template>
-    <div class="relative flex h-full flex-col">
+    <div class="relative flex h-full flex-col ">
         <div v-if="gameStore.winner" class="fixed left-0 top-0 z-10 size-full bg-black/60"></div>
-        <div v-if="gameStore.winner" class="absolute left-1/2 top-1/2 z-20 flex w-full max-w-[400px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 rounded-lg bg-white py-24 font-bold ">
-            {{ gameStore.winner.name }} a gagné la partie !
-            <div class="flex gap-4">
+        <div v-if="gameStore.winner" class="absolute left-1/2 top-1/2 z-20 flex w-full max-w-[400px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 rounded-lg bg-white py-16 font-bold dark:bg-slate-800">
+            <span class="mb-6 text-center text-xl dark:text-white"><span class="text-2xl capitalize">{{ gameStore.winner.name }}</span><br />a gagné la partie !</span>
+            <div class="flex flex-col gap-6">
+                <div class="absolute left-1/2 top-0 w-1/3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white p-5 dark:bg-slate-800" @click="jsConfetti.addConfetti()">
+                    <img class="dark:hidden" src="/icons/logo.svg" />
+                    <img class="hidden dark:block" src="/icons/logo-white.svg" />
+                </div>
                 <!-- TODO: gameStore.goHome() -->
-                <button class="rounded-lg bg-amber-500 px-4 py-2 text-white hover:bg-green-700" @click="endGame()">
-                    MENU
+                <button class="rounded-lg bg-gray-200 px-4 py-2 text-slate-600 hover:bg-slate-300 dark:bg-slate-200" @click="endGame()">
+                    RETOUR MENU
                 </button>
                 <button class="rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700" @click="replayGame()">
                     REJOUER !
@@ -15,7 +19,7 @@
         </div>
         <div class="flex size-full grow gap-4 py-6">
             <!-- SCORE LIST -->
-            <div class="w-1/6">
+            <div class="sticky left-0 top-0 z-10 w-1/6 bg-white dark:bg-slate-900">
                 <div class="flex size-full flex-col gap-2 dark:text-white">
                     <div class="mb-4 flex h-20 items-center justify-center">
                         <button class="mx-4 cursor-pointer rounded-lg border-2 border-slate-300 p-3 text-base hover:bg-slate-700 active:bg-slate-600" @click="navigateTo('/')">
@@ -28,12 +32,12 @@
                 </div>
             </div>
             <!-- PLAYERS SCORES -->
-            <div class="flex w-full gap-4">
+            <div class="no-scrollbar flex w-full gap-4 overflow-auto">
                 <div v-for="player in gameStore.game?.players" :key="player.id" class="flex size-full flex-col gap-2 dark:text-white">
                     <div class="mb-4 flex h-20 w-full rounded-lg text-lg font-bold dark:bg-slate-800">
                         <div class="flex w-full items-center">
-                            <div class="flex grow flex-col items-center justify-center">
-                                <span class="capitalize">{{ player.name }}</span>
+                            <div class="flex grow flex-col items-center justify-center px-3">
+                                <span class="text-nowrap capitalize">{{ player.name }}</span>
                                 <Transition name="blink" mode="out-in">
                                     <span :key="gameCricketStore.getScorePointsByPlayerId(player.id)">{{ gameCricketStore.getScorePointsByPlayerId(player.id) }}</span>
                                 </Transition>
@@ -64,11 +68,14 @@
 </template>
 
 <script lang="ts" setup>
+import JSConfetti from 'js-confetti'
+
 definePageMeta({
     layout: 'default',
     middleware: 'has-game'
 });
 
+const jsConfetti = new JSConfetti()
 const gameStore = useGameStore();
 const gameCricketStore = useGameCricketStore();
 
@@ -89,6 +96,12 @@ function endGame() {
 
     navigateTo('/');
 }
+
+watch(gameStore, () => {
+    if(gameStore.winner) {
+        jsConfetti.addConfetti()
+    }
+})
 
 function replayGame() {
     if(gameStore.game?.mode.mode == 'cricket') {
