@@ -37,6 +37,12 @@ export default defineNuxtConfig({
         '@pinia/nuxt',
         '@pinia-plugin-persistedstate/nuxt'
     ],
+    components: [
+        {
+            path: '~/components',
+            pathPrefix: false,
+        }
+    ],
     tailwindcss: {
         cssPath: '~/assets/css/tailwind.css',
     }

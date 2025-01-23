@@ -1,6 +1,6 @@
 <template>
     <div class="relative flex h-full flex-col ">
-        <div v-if="gameStore.winner" class="fixed left-0 top-0 z-10 size-full bg-black/60"></div>
+        <div v-if="gameStore.winner" id="backdrop" class="fixed left-0 top-0 z-20 size-full bg-black/60"></div>
         <div v-if="gameStore.winner" class="absolute left-1/2 top-1/2 z-20 flex w-full max-w-[400px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 rounded-lg bg-white py-16 font-bold dark:bg-slate-800">
             <span class="mb-6 text-center text-xl dark:text-white"><span class="text-2xl capitalize">{{ gameStore.winner.name }}</span><br />a gagné la partie !</span>
             <div class="flex flex-col gap-6">
@@ -26,7 +26,10 @@
                             HOME
                         </button>
                     </div>
-                    <div v-for="score in gameCricketStore.cricketScores" :key="score" class="flex grow items-center justify-center text-2xl font-bold dark:text-white" :class="{'opacity-15': gameCricketStore.checkClosedScore(score)}">
+                    <div v-for="score in gameCricketStore.cricketScores"
+                         :key="score"
+                         class="flex grow items-center justify-center text-4xl font-bold dark:text-white"
+                         :class="{'opacity-15': gameCricketStore.checkClosedScore(score)}">
                         {{ score == 25 ? 'B' : score }}
                     </div>
                 </div>
@@ -48,7 +51,10 @@
                         </div>
                     </div>
                     <!-- Start cricket grid -->
-                    <div v-for="score in gameCricketStore.cricketScores" :key="score" class="relative flex grow cursor-pointer flex-col items-center justify-center" :class="{'pointer-events-none opacity-15': gameCricketStore.checkClosedScore(score)}"
+                    <div v-for="score in gameCricketStore.cricketScores"
+                         :key="score"
+                         class="relative flex grow cursor-pointer flex-col items-center justify-center"
+                         :class="{'pointer-events-none opacity-15': gameCricketStore.checkClosedScore(score)}"
                          @click="playerScore(player.id, score)">
                         <span v-if="gameCricketStore.getCountByScorePlayer(player.id, score) == 0" class="cross-step-0"></span>
                         <span v-if="gameCricketStore.getCountByScorePlayer(player.id, score) >= 1" class="cross-step-1"></span>
@@ -78,6 +84,7 @@ definePageMeta({
 const jsConfetti = new JSConfetti()
 const gameStore = useGameStore();
 const gameCricketStore = useGameCricketStore();
+const historyStore = useHistoryStore();
 
 if(gameStore.game?.mode.mode == 'cricket') {
     gameCricketStore.startGame(gameStore.game?.mode.variant as CricketVariantModes)
@@ -99,7 +106,21 @@ function endGame() {
 
 watch(gameStore, () => {
     if(gameStore.winner) {
-        jsConfetti.addConfetti()
+        jsConfetti.addConfetti();
+
+        if(gameStore.game) {
+            // push history record
+            historyStore.addHistoryRecord({
+                date: new Date(),
+                game: gameStore.game,
+                winnerPlayer: gameStore.winner,
+                scores: gameStore.game.players.map((player: Player) => ({
+                    player: player,
+                    score: gameCricketStore.getScorePointsByPlayerId(player.id)
+                }))
+            })
+        }
+
     }
 })
 

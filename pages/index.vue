@@ -1,10 +1,22 @@
 <template>
     <div class="flex h-full flex-col justify-between py-5">
         <div>
-            <div class="mb-4 dark:text-white">
+            <div class="mb-4 flex items-center justify-between dark:text-white">
                 <h1 class="text-2xl font-bold">
                     Dartiflet
                 </h1>
+
+                <div>
+                    <NuxtLink to="/history">
+                        <ButtonIcon size="32">
+                            <template #icon>
+                                <div class="dark:text-white">
+                                    <IconHistory />
+                                </div>
+                            </template>
+                        </ButtonIcon>
+                    </NuxtLink>
+                </div>
             </div>
             <PlayerListView />
             <PlayerAddForm />
@@ -38,7 +50,8 @@
                 </select>
             </div>
 
-            <button :disabled="noPlayers || noGameModeSelected" class="inline-block w-full rounded border border-green-600 bg-green-600 px-12 py-3 text-sm font-medium text-white hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-green-500 disabled:pointer-events-none disabled:border-gray-500 disabled:bg-gray-500"
+            <button :disabled="noPlayers || noGameModeSelected"
+                    class="inline-block w-full rounded border border-green-600 bg-green-600 px-12 py-3 text-sm font-medium text-white hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-green-500 disabled:pointer-events-none disabled:border-gray-500 disabled:bg-gray-500"
                     @click="onStartGame()">
                 Demarrer une nouvelle partie
             </button>

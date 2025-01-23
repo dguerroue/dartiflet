@@ -4,6 +4,14 @@ import { useGameStore } from './gameStore';
 
 export type CricketVariantModes = 'classic' | 'random'
 
+export type PlayerScore = {
+    playerId: number,
+    scorePoints: number,
+    scoresOpen: number[],
+    scoresClose: number[],
+    playerScoreHistory: number[]
+}
+
 export const useGameCricketStore = defineStore('gameCricket', () => {
     const gameStore = useGameStore();
 
@@ -19,13 +27,7 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
         state: 1 | 2 | 3
     }
 
-    type PlayerScore = {
-        playerId: number,
-        scorePoints: number,
-        scoresOpen: number[],
-        scoresClose: number[],
-        playerScoreHistory: number[]
-    }
+    
 
     const playerIdsHistory: number[] = []
     
