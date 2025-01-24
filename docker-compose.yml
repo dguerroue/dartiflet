@@ -6,7 +6,7 @@ services:
     volumes:
       - .:/usr/src/app
     ports:
-      - "3010:3010"
+      - "3010:3000"
     command: >
-      sh -c "npm install && npm run build && PORT=3010 node .output/server/index.mjs"
+      sh -c "npm install && npm run build && node .output/server/index.mjs"
     restart: always
