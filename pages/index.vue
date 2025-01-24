@@ -25,7 +25,7 @@
         <div class="flex flex-col gap-4">
             <button v-if="gameStore.game?.isStarted" class="mb-6 rounded border-2 border-dashed p-6 text-sm dark:border-white dark:text-white" @click="navigateTo('/game')">
                 <span class="flex items-center justify-between">
-                    Reprendre la partie en cours <i>></i>
+                    Reprendre la partie en cours <IconChevronRight />
                 </span>
             </button>
 

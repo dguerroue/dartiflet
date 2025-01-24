@@ -5,7 +5,7 @@
                 {{ player.name }}
 
                 <button type="button" class="p-4" @click="playerStore.removePlayer(player.id)">
-                    X
+                    <IconXmark />
                 </button>
             </div>
         </div>
