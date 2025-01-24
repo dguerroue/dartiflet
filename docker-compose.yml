@@ -1,0 +1,12 @@
+services:
+  app:
+    image: node:20
+    container_name: dartiflet-node
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "3010:3010"
+    command: >
+      sh -c "npm install --production && npm run build && node .output/server/index.mjs"
+    restart: always
