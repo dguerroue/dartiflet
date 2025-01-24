@@ -1,7 +1,7 @@
 <template>
     <div class="flex h-full flex-col justify-between py-5">
         <div>
-            <div class="mb-4 flex items-center justify-between dark:text-white">
+            <div class="mb-4 flex items-center justify-between text-white">
                 <h1 class="text-2xl font-bold">
                     Dartiflet
                 </h1>
@@ -10,7 +10,7 @@
                     <NuxtLink to="/history">
                         <ButtonIcon size="32">
                             <template #icon>
-                                <div class="dark:text-white">
+                                <div class="text-white">
                                     <IconHistory />
                                 </div>
                             </template>
@@ -23,7 +23,7 @@
         </div>
 
         <div class="flex flex-col gap-4">
-            <button v-if="gameStore.game?.isStarted" class="mb-6 rounded border-2 border-dashed p-6 text-sm dark:border-white dark:text-white" @click="navigateTo('/game')">
+            <button v-if="gameStore.game?.isStarted" class="mb-6 rounded border-2 border-dashed p-6 text-sm border-white text-white" @click="navigateTo('/game')">
                 <span class="flex items-center justify-between">
                     Reprendre la partie en cours <IconChevronRight />
                 </span>
@@ -31,7 +31,7 @@
 
             <!-- GAME SELECTOR -->
             <div>
-                <label for="game-mode" class="block text-sm font-medium text-gray-900 dark:text-white"> Mode de Jeu </label>
+                <label for="game-mode" class="block text-sm font-medium text-white"> Mode de Jeu </label>
 
                 <select id="game-mode"
                         v-model="selectedGameModeRef"

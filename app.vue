@@ -5,10 +5,7 @@
 </template>
 
 <style lang="scss">
-
-@media (prefers-color-scheme: dark) {
-  body, html {
+body, html {
     @apply bg-slate-900;
-  }  
 }
 </style>
