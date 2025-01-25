@@ -13,7 +13,7 @@ services:
       dockerfile: .docker/prod/Dockerfile
     container_name: dartiflet-app
     ports:
-      - "3010:3000"
+      - "3020:3000"
     environment:
       - NODE_ENV=production
     restart: always

@@ -33,14 +33,15 @@ jobs:
 
           cd .docker/prod
 
-          docker compose down
-
           docker compose up -d maintenance
           docker compose up -d --build app
 
           sleep 10
 
           docker compose stop maintenance
+
+          sed -i 's/3020:3000/3010:3000/' docker-compose.yml
+
           docker compose up -d app
 
           EOF
