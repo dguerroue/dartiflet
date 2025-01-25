@@ -39,9 +39,6 @@ jobs:
           sleep 10
 
           docker compose stop maintenance
-
-          sed -i 's/3020:3000/3010:3000/' docker-compose.yml
-
           docker compose up -d app
 
           EOF
