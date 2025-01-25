@@ -1,14 +1,14 @@
 <template>
     <div class="relative flex h-full flex-col ">
         <div v-if="gameStore.winner" id="backdrop" class="fixed left-0 top-0 z-20 size-full bg-black/60"></div>
-        <div v-if="gameStore.winner" class="absolute left-1/2 top-1/2 z-20 flex w-full max-w-[400px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 rounded-lg py-16 font-bold bg-slate-800">
+        <div v-if="gameStore.winner" class="absolute left-1/2 top-1/2 z-20 flex w-full max-w-[400px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 rounded-lg bg-slate-800 py-16 font-bold">
             <span class="mb-6 text-center text-xl text-white"><span class="text-2xl capitalize">{{ gameStore.winner.name }}</span><br />a gagné la partie !</span>
             <div class="flex flex-col gap-6">
-                <div class="absolute left-1/2 top-0 w-1/3 -translate-x-1/2 -translate-y-1/2 rounded-full p-5 bg-slate-800" @click="jsConfetti.addConfetti()">
+                <div class="absolute left-1/2 top-0 w-1/3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-800 p-5" @click="jsConfetti.addConfetti()">
                     <img src="/assets/icons/logo-white.svg" />
                 </div>
                 <!-- TODO: gameStore.goHome() -->
-                <button class="rounded-lg px-4 py-2 text-slate-600 hover:bg-slate-300 bg-slate-200" @click="endGame()">
+                <button class="rounded-lg bg-slate-200 px-4 py-2 text-slate-600 hover:bg-slate-300" @click="endGame()">
                     RETOUR MENU
                 </button>
                 <button class="rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700" @click="replayGame()">
@@ -36,7 +36,7 @@
             <!-- PLAYERS SCORES -->
             <div class="no-scrollbar flex w-full gap-4 overflow-auto">
                 <div v-for="player in gameStore.game?.players" :key="player.id" class="flex size-full flex-col gap-2 text-white">
-                    <div class="mb-4 flex h-20 w-full rounded-lg text-lg font-bold bg-slate-800">
+                    <div class="mb-4 flex h-20 w-full rounded-lg bg-slate-800 text-lg font-bold">
                         <div class="flex w-full items-center">
                             <div class="flex grow flex-col items-center justify-center px-3">
                                 <span class="text-nowrap capitalize">{{ player.name }}</span>
@@ -65,7 +65,7 @@
         </div>
         <div class="flex w-full">
             <div class="w-1/6"></div>
-            <div class="mb-4 flex h-14 grow cursor-pointer flex-col items-center justify-center rounded-lg text-lg font-bold active:bg-slate-600 bg-slate-800 text-white" @click="gameCricketStore.undo()">
+            <div class="mb-4 flex h-14 grow cursor-pointer flex-col items-center justify-center rounded-lg bg-slate-800 text-lg font-bold text-white active:bg-slate-600" @click="gameCricketStore.undo()">
                 ANNULER
             </div>
         </div>
