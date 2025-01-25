@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page de Maintenance</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex items-center justify-center min-h-screen px-4">
+  <div class="text-center p-4 sm:p-8 w-full max-w-xl bg-white rounded-lg shadow-custom mx-auto transition-shadow">
+    <div class="inline-block mx-auto py-4 text-orange-600">
+      <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 512 512" fill="currentColor"><path d="M173.7 128L216 20.3C220.8 8.1 232.7 0 245.8 0l20.4 0c13.2 0 25 8.1 29.8 20.3L338.3 128l-164.6 0zm-25.1 64l214.9 0 37.7 96-290.3 0 37.7-96zM48 448l37.7-96 340.6 0L464 448l16 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l16 0z"/></svg>
+    </div>
+    <h1 class="text-4xl font-bold text-gray-800 mb-4">Maintenance</h1>
+    <p class="text-lg text-gray-600 mb-8">Voici un gif de chat pour patienter.</p>
+
+    <div class="relative size-[200px] mx-auto mb-8 rounded-lg overflow-hidden">
+      <img src="https://cataas.com/cat/gif" alt="Cat" class="object-cover size-full relative z-10" />
+      <div class="absolute left-0 top-0 z-0 bg-gray-300 size-full animate-pulse"></div>
+    </div>
+  </div>
+</body>
+<style>
+  .shadow-custom {
+    box-shadow: rgba(17, 17, 26, 0.05) 0px 4px 16px, rgba(17, 17, 26, 0.05) 0px 8px 32px;
+  }
+</style>
+</html>

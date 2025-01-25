@@ -1,0 +1,11 @@
+services:
+  app:
+    build: 
+      context: ../..
+      dockerfile: .docker/maintenance/Dockerfile
+    container_name: dartiflet-app-maintenance
+    volumes:
+      - ../../maintenance.html:/usr/share/nginx/html/index.html
+    ports:
+      - "80:80"
+    restart: always
