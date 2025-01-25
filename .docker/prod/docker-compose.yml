@@ -17,11 +17,3 @@ services:
     environment:
       - NODE_ENV=production
     restart: always
-    depends_on:
-      - maintenance
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"] # Vérifie la santé de l'application
-      interval: 30s
-      retries: 3
-      start_period: 30s
-      timeout: 10s
