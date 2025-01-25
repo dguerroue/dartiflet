@@ -8,7 +8,7 @@ services:
       - "3010:80"
     restart: always
   app:
-    build: 
+    build:
       context: ../..
       dockerfile: .docker/prod/Dockerfile
     container_name: dartiflet-app
@@ -19,7 +19,7 @@ services:
     restart: always
     depends_on:
       - maintenance
-     healthcheck:
+    healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"] # Vérifie la santé de l'application
       interval: 30s
       retries: 3
