@@ -31,7 +31,9 @@ jobs:
           git fetch origin main
           git reset --hard origin/main
 
+          cs .docker/prod
+
           docker compose down
-          docker compose up --build -d
+          docker compose up --build
 
           EOF
