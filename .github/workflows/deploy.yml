@@ -35,9 +35,7 @@ jobs:
 
           docker compose down
           docker compose up -d maintenance
-          docker compose up -d --build app
-
-          sleep 10
+          docker compose build app
 
           docker compose stop maintenance
           docker compose up -d app
