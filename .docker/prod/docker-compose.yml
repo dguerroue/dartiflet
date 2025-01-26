@@ -1,12 +1,12 @@
 services:
-  maintenance:
-    build:
-      context: ../..
-      dockerfile: .docker/maintenance/Dockerfile
-    container_name: dartiflet-app-maintenance
-    ports:
-      - "3010:80"
-    restart: always
+  # maintenance:
+  #   build:
+  #     context: ../..
+  #     dockerfile: .docker/maintenance/Dockerfile
+  #   container_name: dartiflet-app-maintenance
+  #   ports:
+  #     - "3010:80"
+  #   restart: always
   app:
     build:
       context: ../..

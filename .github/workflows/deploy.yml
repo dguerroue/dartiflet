@@ -23,6 +23,14 @@ jobs:
 
 
       # Execute deployment commands on the server
+
+      # docker compose down
+
+      # docker compose up -d maintenance
+      # docker compose build app
+
+      # docker compose stop maintenance
+      # docker compose up -d app
       - name: Deploy application
         run: |
           ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << EOF
@@ -34,10 +42,7 @@ jobs:
           cd .docker/prod
 
           docker compose down
-          docker compose up -d maintenance
-          docker compose build app
 
-          docker compose stop maintenance
-          docker compose up -d app
+          docker compose up -d
 
           EOF
