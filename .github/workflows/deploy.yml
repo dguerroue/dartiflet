@@ -41,7 +41,7 @@ jobs:
 
           cd .docker/prod
 
-          docker compose down
+          docker compose -p dartiflet down
 
           docker compose -p dartiflet up -d
 
