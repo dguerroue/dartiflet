@@ -23,7 +23,7 @@
         </div>
 
         <div class="flex flex-col gap-4">
-            <button v-if="gameStore.game?.isStarted" class="mb-6 rounded border-2 border-dashed border-white p-6 text-sm text-white" @click="navigateTo('/game')">
+            <button v-if="gameStore.game?.isStarted" class="mb-6 rounded border-2 border-dashed border-white p-6 text-sm text-white" @click="navigateTo('gameCricket')">
                 <span class="flex items-center justify-between">
                     Reprendre la partie en cours <IconChevronRight />
                 </span>
@@ -44,7 +44,7 @@
                         <option v-for="gameModeVariant in gameMode.variants" 
                                 :key="gameModeVariant"
                                 :label="`${gameMode.mode} - ${gameModeVariant}`"
-                                :value="`${gameMode.mode}-${gameModeVariant}`">
+                                :value="`${gameMode.mode}_${gameModeVariant}`">
                         </option>
                     </optgroup>
                 </select>
@@ -72,8 +72,8 @@ const gameStore = useGameStore();
 const selectedGameModeRef = ref('');
 const selectedGameMode = computed(() => {
     return {
-        mode: selectedGameModeRef.value.split('-')[0],
-        variant: selectedGameModeRef.value.split('-')[1]
+        mode: selectedGameModeRef.value.split('_')[0],
+        variant: selectedGameModeRef.value.split('_')[1]
     }
 });
 const noPlayers = computed(() => playerStore.players.length === 0);
@@ -84,7 +84,7 @@ function onStartGame() {
     if(playerStore.players.length) {
         if(selectedGameMode.value.mode == 'cricket') {
             gameStore.newGame<'cricket', CricketVariantModes>(playerStore.players, {mode: selectedGameMode.value.mode, variant: selectedGameMode.value.variant as CricketVariantModes});
-            navigateTo('game')
+            navigateTo('gameCricket')
         }
     }
 }
