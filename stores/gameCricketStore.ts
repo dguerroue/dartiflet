@@ -28,8 +28,8 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
         state: 1 | 2 | 3
     }
 
-    const playerIdsHistory: number[] = []
-    const scoreTypeHistory: Array<"score" | "event"> = []
+    let playerIdsHistory: number[] = []
+    let scoreTypeHistory: Array<"score" | "event"> = []
     
     const playersScores = ref<PlayerScore[]>([]);
 
@@ -71,11 +71,16 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
     function resetGame() {
         gameStore.resetGame();
 
-        playersScores.value.forEach(ps => {
-            ps.playerScoreHistory = [];
-            ps.scorePoints = 0;
-            ps.scoresOpen = [];
-        })
+        playerIdsHistory = [];
+        scoreTypeHistory = [];
+
+        // playersScores.value.forEach(ps => {
+        //     ps.scorePoints = 0;
+        //     ps.scoresOpen = [];
+        //     ps.playerScoreHistory = [];
+        //     ps.playerScoreEventHistory = [];
+        // })
+        playersScores.value = [];
     }
 
     function getScoresByPlayerId(playerId: number) {
@@ -172,11 +177,14 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
     }
 
     function pushEventScore(playerId: number, score: number) {
+
         playerIdsHistory.push(playerId);
         scoreTypeHistory.push('event');
-
+        
+        
         const playerScore = getScoresByPlayerId(playerId);
         if(playerScore === undefined) {
+
             playersScores.value.push({
                 playerId: playerId,
                 scorePoints: score,
