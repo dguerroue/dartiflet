@@ -2,7 +2,7 @@ import {Howl, Howler} from 'howler';
 import { defineStore } from 'pinia'
 import { useGameStore } from './gameStore';
 
-export type CricketVariantModes = 'classic' | 'random'
+export type CricketVariantModes = 'classic' | 'random' | 'random-and-events';
 
 export type PlayerScore = {
     playerId: number,
@@ -34,14 +34,12 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
     const playersScores = ref<PlayerScore[]>([]);
 
     function startGame(variant: CricketVariantModes) {
-        if(gameStore.game?.isStarted) {
-            resetGame();
-        }
+        console.log('start cricket')
         
         if(variant == 'classic') {
             cricketScores.value = defaultCricketScores
         }
-        if(variant == 'random') {
+        if(variant == 'random' || variant == 'random-and-events') {
             function generateRandomArray(length: number, min: number = 1, max: number = 20): number[] {
                 const randomArray: number[] = [];
             

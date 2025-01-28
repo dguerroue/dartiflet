@@ -52,7 +52,7 @@
 
             <button :disabled="noPlayers || noGameModeSelected"
                     class="inline-block w-full rounded border border-green-600 bg-green-600 px-12 py-3 text-sm font-medium text-white hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-green-500 disabled:pointer-events-none disabled:border-gray-500 disabled:bg-gray-500"
-                    @click="onStartGame()">
+                    @click="onStartNewGame()">
                 Demarrer une nouvelle partie
             </button>
         </div>
@@ -79,7 +79,7 @@ const selectedGameMode = computed(() => {
 const noPlayers = computed(() => playerStore.players.length === 0);
 const noGameModeSelected = computed(() => selectedGameModeRef.value === "");
 
-function onStartGame() {
+function onStartNewGame() {
    
     if(playerStore.players.length) {
         if(selectedGameMode.value.mode == 'cricket') {

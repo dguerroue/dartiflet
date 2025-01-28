@@ -52,14 +52,19 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Start cricket grid -->
-                    <div v-if="isEventMode" class="relative flex grow cursor-pointer flex-col items-center justify-center text-yellow-400">
-                        <span v-if="gameEventStore.eventScore" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center text-4xl font-bold" @click="playerEventScore(player.id, gameEventStore.eventScore)">{{ gameEventStore.eventScore }}</span>
-                        <span v-else class="cross-step-0"></span>
+                    <!-- Start Event row -->
+                    <div v-if="isEventMode && !gameEventStore.isEventStarted" class="relative flex grow select-none flex-col items-center justify-center">
+                        <span class="cross-step-0"></span>
                     </div>
+                    <div v-if="isEventMode && gameEventStore.isEventStarted && gameEventStore.eventScore"
+                         class="relative flex grow cursor-pointer select-none flex-col items-center justify-center text-yellow-400 transition-colors active:bg-white/5"
+                         @click="playerEventScore(player.id, gameEventStore.eventScore)">
+                        <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center text-4xl font-bold">{{ gameEventStore.eventScore }}</span>
+                    </div>
+                    <!-- Start cricket grid -->
                     <div v-for="score in gameCricketStore.cricketScores"
                          :key="score"
-                         class="relative flex grow cursor-pointer flex-col items-center justify-center"
+                         class="relative flex grow cursor-pointer flex-col items-center justify-center transition-colors active:bg-white/5"
                          :class="{'pointer-events-none opacity-15': gameCricketStore.checkClosedScore(score)}"
                          @click="playerScore(player.id, score)">
                         <span v-if="gameCricketStore.getCountByScorePlayer(player.id, score) == 0" class="cross-step-0"></span>
@@ -78,7 +83,7 @@
             <div :class="gameEventStore.isEventStarted ? 'border-yellow-400 text-yellow-400' : 'border-slate-800 text-white'"
                  class="relative mb-4 flex h-14 grow cursor-pointer flex-col items-center justify-center rounded-lg border-4 bg-slate-800 text-lg font-bold  active:bg-slate-600"
                  @click="gameEventStore.startEvent(15)">
-                <div class="min-w-[55px] bg-red-500 text-center">
+                <div class="min-w-[55px] text-center">
                     <span v-if="gameEventStore.isEventStarted">00:{{ gameEventStore.eventTime?.toString().padStart(2, "0") }}</span>
                     <span v-else class="cross-step-0"></span>
                 </div>
@@ -104,7 +109,10 @@ const gameEventStore = useGameEventStore();
 const isEventMode = gameStore.game?.mode.variant.includes('event');
 
 if(gameStore.game?.mode.mode == 'cricket') {
-    gameCricketStore.startGame(gameStore.game?.mode.variant as CricketVariantModes)
+    if(gameStore.game.isStarted == false) {
+        gameCricketStore.resetGame();
+        gameCricketStore.startGame(gameStore.game?.mode.variant as CricketVariantModes)
+    }
 };
 
 // if(gameStore.game?.mode.variant === 'random-and-events') {
