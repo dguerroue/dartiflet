@@ -57,7 +57,7 @@
                         <span class="cross-step-0"></span>
                     </div>
                     <div v-if="isEventMode && gameEventStore.isEventStarted && gameEventStore.eventScore"
-                         class="relative flex grow cursor-pointer select-none flex-col items-center justify-center text-yellow-400 transition-colors active:bg-white/5"
+                         class="relative flex grow cursor-pointer flex-col items-center justify-center text-yellow-400 transition-colors active:bg-white/5"
                          @click="playerEventScore(player.id, gameEventStore.eventScore)">
                         <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center text-4xl font-bold">{{ gameEventStore.eventScore }}</span>
                     </div>
