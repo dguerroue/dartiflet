@@ -23,9 +23,9 @@
         </div>
 
         <div class="flex flex-col gap-4">
-            <button v-if="gameStore.game?.isStarted" class="mb-6 rounded border-2 border-dashed border-white p-6 text-sm text-white" @click="navigateTo('gameCricket')">
+            <button v-if="gameStore.game?.isStarted" class="mb-6 rounded-lg bg-white p-4 text-sm" @click="navigateTo('gameCricket')">
                 <span class="flex items-center justify-between">
-                    Reprendre la partie en cours <IconChevronRight />
+                    Reprendre la partie en cours <IconChevronRight size="20" />
                 </span>
             </button>
 
@@ -51,7 +51,7 @@
             </div>
 
             <button :disabled="noPlayers || noGameModeSelected"
-                    class="inline-block w-full rounded border border-green-600 bg-green-600 px-12 py-3 text-sm font-medium text-white hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-green-500 disabled:pointer-events-none disabled:border-gray-500 disabled:bg-gray-500"
+                    class="inline-block w-full rounded-lg border border-green-600 bg-green-600 px-12 py-3 text-sm font-medium text-white hover:bg-transparent hover:text-green-600 focus:outline-none focus:ring active:text-green-500 disabled:pointer-events-none disabled:border-gray-500 disabled:bg-gray-500"
                     @click="onStartNewGame()">
                 Demarrer une nouvelle partie
             </button>

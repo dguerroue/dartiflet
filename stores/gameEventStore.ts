@@ -6,6 +6,8 @@ export const useGameEventStore = defineStore('gameEvent', () => {
     const eventTimerId = ref<NodeJS.Timeout>();
     const eventScore = ref<number|null>(null);
 
+    const { newEventSound } = useSoundEffect();
+
     function generateEventScore() {
         const possibleEventScore = [20, 19, 18, 17, 16, 15];
 
@@ -33,7 +35,7 @@ export const useGameEventStore = defineStore('gameEvent', () => {
         }
 
         eventTime.value = eventDurationSeconds;
-        new Howl({ src: '/sounds/event.mp3', volume: 0.4}).play();
+        newEventSound.play();
         
         eventTimerId.value = setInterval(() => {
             if(eventTime.value !== undefined) {
