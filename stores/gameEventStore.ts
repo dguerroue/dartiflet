@@ -21,6 +21,10 @@ export const useGameEventStore = defineStore('gameEvent', () => {
     }
 
     function startEvent(eventDurationSeconds: number) {
+        if(isEventStarted.value) {
+            return;
+        }
+
         generateEventScore();
         isEventStarted.value = true;
         

@@ -77,17 +77,18 @@
         </div>
         <div class="flex w-full space-x-2">
             <div class="w-1/6"></div>
-            <div class="mb-4 flex h-14 grow cursor-pointer flex-col items-center justify-center rounded-lg bg-slate-800 text-lg font-bold text-white active:bg-slate-600" @click="gameCricketStore.undo()">
+            <button type="button" class="mb-4 flex h-14 grow cursor-pointer flex-col items-center justify-center rounded-lg bg-slate-800 text-lg font-bold text-white active:bg-slate-600" @click="gameCricketStore.undo()">
                 ANNULER
-            </div>
-            <div :class="gameEventStore.isEventStarted ? 'border-yellow-400 text-yellow-400' : 'border-slate-800 text-white'"
-                 class="relative mb-4 flex h-14 grow cursor-pointer flex-col items-center justify-center rounded-lg border-4 bg-slate-800 text-lg font-bold  active:bg-slate-600"
-                 @click="gameEventStore.startEvent(15)">
+            </button>
+            <button type="button"
+                    :class="gameEventStore.isEventStarted ? 'border-yellow-400 text-yellow-400' : 'border-slate-800 text-white'"
+                    class="relative mb-4 flex h-14 grow cursor-pointer flex-col items-center justify-center rounded-lg border-4 bg-slate-800 text-lg font-bold  active:bg-slate-600"
+                    @click="onClickStartEvent()">
                 <div class="min-w-[55px] text-center">
                     <span v-if="gameEventStore.isEventStarted">00:{{ gameEventStore.eventTime?.toString().padStart(2, "0") }}</span>
                     <span v-else class="cross-step-0"></span>
                 </div>
-            </div>
+            </button>
         </div>
     </div>
 </template>
@@ -125,6 +126,11 @@ function playerScore(id:number, score: number) {
 
 function playerEventScore(id:number, score: number) {
     gameCricketStore.pushEventScore(id, score);
+}
+
+function onClickStartEvent() {
+    gameEventStore.stopEvent();
+    gameEventStore.startEvent(15);
 }
 
 function endGame() {
