@@ -31,6 +31,10 @@ jobs:
 
       # docker compose stop maintenance
       # docker compose up -d app
+      - name: Check Docker versions
+        run: |
+          docker --version
+          docker compose version
       - name: Deploy application
         run: |
           ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << EOF
