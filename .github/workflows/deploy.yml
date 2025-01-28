@@ -45,6 +45,9 @@ jobs:
 
           cd .docker/prod
 
+          docker --version
+          docker compose version
+
           docker compose up -d --buid
 
           EOF
