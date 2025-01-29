@@ -119,7 +119,7 @@ if(gameStore.game?.mode.mode == 'cricket') {
 };
 
 if(gameStore.game?.mode.variant === 'random-and-events') {
-    // gameEventStore.startRandomEventLoop();
+    gameEventStore.startRandomEventLoop();
 }
 
 function playerScore(id:number, score: number) {
