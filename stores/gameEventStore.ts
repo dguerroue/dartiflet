@@ -5,6 +5,7 @@ export const useGameEventStore = defineStore('gameEvent', () => {
     const eventTime = ref<number>();
     const eventTimerId = ref<NodeJS.Timeout>();
     const eventScore = ref<number|null>(null);
+    const clockEventId = ref<NodeJS.Timeout>();
 
     const { newEventSound } = useSoundEffect();
 
@@ -20,6 +21,25 @@ export const useGameEventStore = defineStore('gameEvent', () => {
 
     function resetEventScore() {
         eventScore.value = null;
+    }
+
+    function startRandomEventLoop(minSeconds: number = 40, maxSeconds: number = 120, eventDurationSeconds: number = 40) {
+        const randTimeout = Math.floor(Math.random() * (maxSeconds - minSeconds) + minSeconds);
+        console.log('Next event in: ', randTimeout);
+        clockEventId.value = setTimeout(() => {
+            if(!isEventStarted.value) {
+                stopEvent();
+                startEvent(eventDurationSeconds);
+            }
+            startRandomEventLoop(eventDurationSeconds + minSeconds, maxSeconds, eventDurationSeconds);
+        }, randTimeout * 1000);
+    }
+
+    function stopRandomEventLoop() {
+        if (clockEventId.value) {
+            clearTimeout(clockEventId.value);
+            clockEventId.value = undefined;
+        }
     }
 
     function startEvent(eventDurationSeconds: number) {
@@ -64,6 +84,8 @@ export const useGameEventStore = defineStore('gameEvent', () => {
         isEventStarted,
         generateEventScore,
         resetEventScore,
+        startRandomEventLoop,
+        stopRandomEventLoop,
         startEvent,
         stopEvent
     }

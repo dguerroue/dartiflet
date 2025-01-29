@@ -81,9 +81,9 @@
                 ANNULER
             </button>
             <button type="button"
-                    :class="gameEventStore.isEventStarted ? 'border-yellow-400 text-yellow-400' : 'border-slate-800 text-white'"
+                    :class="[gameEventStore.isEventStarted ? 'border-yellow-400 text-yellow-400' : 'border-slate-800 text-white', {'event-hurry-up': gameEventStore.isEventStarted && gameEventStore.eventTime && gameEventStore.eventTime <= 5}]"
                     class="relative mb-4 flex h-14 grow cursor-pointer flex-col items-center justify-center rounded-lg border-4 bg-slate-800 text-lg font-bold  active:bg-slate-600"
-                    @click="onClickStartEvent()">
+                    @click="false && onClickStartEvent()">
                 <div class="min-w-[55px] text-center">
                     <span v-if="gameEventStore.isEventStarted">00:{{ gameEventStore.eventTime?.toString().padStart(2, "0") }}</span>
                     <span v-else class="cross-step-0"></span>
@@ -105,7 +105,9 @@ const jsConfetti = new JSConfetti()
 const gameStore = useGameStore();
 const gameCricketStore = useGameCricketStore();
 const historyStore = useHistoryStore();
+
 const gameEventStore = useGameEventStore();
+
 
 const isEventMode = gameStore.game?.mode.variant.includes('event');
 
@@ -116,9 +118,9 @@ if(gameStore.game?.mode.mode == 'cricket') {
     }
 };
 
-// if(gameStore.game?.mode.variant === 'random-and-events') {
-
-// }
+if(gameStore.game?.mode.variant === 'random-and-events') {
+    // gameEventStore.startRandomEventLoop();
+}
 
 function playerScore(id:number, score: number) {
     gameCricketStore.pushScore(id, score)
@@ -130,13 +132,16 @@ function playerEventScore(id:number, score: number) {
 
 function onClickStartEvent() {
     gameEventStore.stopEvent();
-    gameEventStore.startEvent(10);
+    gameEventStore.startEvent(15);
 }
 
 function endGame() {
     if(gameStore.game?.mode.mode == 'cricket') {
         gameCricketStore.resetGame();
     };
+    if(gameStore.game?.mode.variant === 'random-and-events') {
+        gameEventStore.stopRandomEventLoop();
+    }
 
     gameStore.endGame();
 
@@ -169,6 +174,12 @@ function replayGame() {
         gameCricketStore.startGame(gameStore.game?.mode.variant as CricketVariantModes)
     };
 }
+
+onBeforeUnmount(() => {
+    if(gameStore.game?.mode.variant === 'random-and-events') {
+        gameEventStore.stopRandomEventLoop();
+    }
+})
 </script>
 
 <style lang="scss" scoped>
@@ -220,5 +231,21 @@ function replayGame() {
 .blink-leave-to {
   transform: scale(1.5);
   opacity: 0;
+}
+
+.event-hurry-up {
+    @keyframes hurryUp {
+        0% {
+            @apply border-yellow-400 text-yellow-400;
+        }
+        50% {
+            @apply border-red-600 text-red-600;
+        }
+        100% {
+            @apply border-yellow-400 text-yellow-400;
+        }
+    }
+
+    animation: hurryUp 0.5s infinite;
 }
 </style>

@@ -10,7 +10,7 @@ function createSoundEffect() {
     const wallSound = new Howl({ src: '/sounds/turtle_scream.mp3', volume: 2 });
     const undoSound = new Howl({ src: '/sounds/undo.mp3', volume: 0.3 });
 
-    const newEventSound = new Howl({ src: '/sounds/event.mp3', volume: 0.4 });
+    const newEventSound = new Howl({ src: '/sounds/event.mp3', volume: 0.6 });
 
     return {
         dartSound1,
