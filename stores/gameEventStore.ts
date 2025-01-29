@@ -37,8 +37,9 @@ export const useGameEventStore = defineStore('gameEvent', () => {
 
     function stopRandomEventLoop() {
         if (clockEventId.value) {
+
+            stopEvent();
             clearTimeout(clockEventId.value);
-            clockEventId.value = undefined;
         }
     }
 
@@ -74,7 +75,6 @@ export const useGameEventStore = defineStore('gameEvent', () => {
 
         if (eventTimerId.value) {
             clearInterval(eventTimerId.value);
-            eventTimerId.value = undefined;
         }
     }
 

@@ -118,7 +118,7 @@ if(gameStore.game?.mode.mode == 'cricket') {
     }
 };
 
-if(gameStore.game?.mode.variant === 'random-and-events') {
+if(gameStore.game?.mode.variant === 'random-and-events' && gameStore.game.isStarted === true) {
     gameEventStore.startRandomEventLoop();
 }
 
@@ -139,10 +139,7 @@ function endGame() {
     if(gameStore.game?.mode.mode == 'cricket') {
         gameCricketStore.resetGame();
     };
-    if(gameStore.game?.mode.variant === 'random-and-events') {
-        gameEventStore.stopRandomEventLoop();
-    }
-
+    
     gameStore.endGame();
 
     navigateTo('/');
@@ -151,6 +148,11 @@ function endGame() {
 watch(gameStore, () => {
     if(gameStore.winner) {
         jsConfetti.addConfetti();
+        gameStore.stopGame();
+
+        if(gameStore.game?.mode.variant === 'random-and-events') {
+            gameEventStore.stopRandomEventLoop();
+        }
 
         if(gameStore.game) {
             // push history record
@@ -164,7 +166,6 @@ watch(gameStore, () => {
                 }))
             })
         }
-
     }
 })
 

@@ -45,9 +45,15 @@ export const useGameStore = defineStore('game', () => {
             game.value.isStarted = true
         }
     }
+    function stopGame() {
+        if(game.value) {
+            game.value.isStarted = false
+        }
+    }
 
     function endGame() {
         game.value = null;
+        stopGame();
         resetGame();
     }
 
@@ -56,13 +62,10 @@ export const useGameStore = defineStore('game', () => {
     }
 
     function resetGame() {
-        if(game.value) {
-            game.value.isStarted = false
-        }
         winner.value = undefined
     }
 
-    return { newGame, startGame, endGame, resetGame, game, gameModes, setWinner, winner }
+    return { newGame, startGame, stopGame, endGame, resetGame, game, gameModes, setWinner, winner }
 }, {
     persist: {
         storage: persistedState.localStorage

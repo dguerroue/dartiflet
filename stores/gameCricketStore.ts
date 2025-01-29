@@ -34,7 +34,6 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
     const playersScores = ref<PlayerScore[]>([]);
 
     function startGame(variant: CricketVariantModes) {
-        console.log('start cricket')
         
         if(variant == 'classic') {
             cricketScores.value = defaultCricketScores
