@@ -25,6 +25,9 @@
                             HOME
                         </button>
                     </div>
+                    <div v-if="isEventMode" class="flex grow items-center justify-center text-4xl font-bold " :class="gameEventStore.isEventStarted ? 'text-yellow-400' : 'text-white'">
+                        E
+                    </div>
                     <div v-for="score in gameCricketStore.cricketScores"
                          :key="score"
                          class="flex grow items-center justify-center text-4xl font-bold text-white"
@@ -49,10 +52,19 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Start Event row -->
+                    <div v-if="isEventMode && !gameEventStore.isEventStarted" class="relative flex grow select-none flex-col items-center justify-center">
+                        <span class="cross-step-0"></span>
+                    </div>
+                    <div v-if="isEventMode && gameEventStore.isEventStarted && gameEventStore.eventScore"
+                         class="relative flex grow cursor-pointer select-none flex-col items-center justify-center text-yellow-400 transition-colors active:bg-white/5"
+                         @click="playerEventScore(player.id, gameEventStore.eventScore)">
+                        <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center text-4xl font-bold">{{ gameEventStore.eventScore }}</span>
+                    </div>
                     <!-- Start cricket grid -->
                     <div v-for="score in gameCricketStore.cricketScores"
                          :key="score"
-                         class="relative flex grow cursor-pointer flex-col items-center justify-center"
+                         class="relative flex grow cursor-pointer flex-col items-center justify-center transition-colors active:bg-white/5"
                          :class="{'pointer-events-none opacity-15': gameCricketStore.checkClosedScore(score)}"
                          @click="playerScore(player.id, score)">
                         <span v-if="gameCricketStore.getCountByScorePlayer(player.id, score) == 0" class="cross-step-0"></span>
@@ -63,11 +75,20 @@
                 </div>
             </div>
         </div>
-        <div class="flex w-full">
+        <div class="flex w-full space-x-2">
             <div class="w-1/6"></div>
-            <div class="mb-4 flex h-14 grow cursor-pointer flex-col items-center justify-center rounded-lg bg-slate-800 text-lg font-bold text-white active:bg-slate-600" @click="gameCricketStore.undo()">
+            <button type="button" class="mb-4 flex h-14 grow cursor-pointer flex-col items-center justify-center rounded-lg bg-slate-800 text-lg font-bold text-white active:bg-slate-600" @click="gameCricketStore.undo()">
                 ANNULER
-            </div>
+            </button>
+            <button type="button"
+                    :class="[gameEventStore.isEventStarted ? 'border-yellow-400 text-yellow-400' : 'border-slate-800 text-white', {'event-hurry-up': gameEventStore.isEventStarted && gameEventStore.eventTime && gameEventStore.eventTime <= 5}]"
+                    class="relative mb-4 flex h-14 grow cursor-pointer flex-col items-center justify-center rounded-lg border-4 bg-slate-800 text-lg font-bold  active:bg-slate-600"
+                    @click="false && onClickStartEvent()">
+                <div class="min-w-[55px] text-center">
+                    <span v-if="gameEventStore.isEventStarted">00:{{ gameEventStore.eventTime?.toString().padStart(2, "0") }}</span>
+                    <span v-else class="cross-step-0"></span>
+                </div>
+            </button>
         </div>
     </div>
 </template>
@@ -85,18 +106,42 @@ const gameStore = useGameStore();
 const gameCricketStore = useGameCricketStore();
 const historyStore = useHistoryStore();
 
+const gameEventStore = useGameEventStore();
+
+
+const isEventMode = gameStore.game?.mode.variant.includes('event');
+
 if(gameStore.game?.mode.mode == 'cricket') {
-    gameCricketStore.startGame(gameStore.game?.mode.variant as CricketVariantModes)
+    if(gameStore.game.isStarted == false) {
+        gameCricketStore.resetGame();
+        gameCricketStore.startGame(gameStore.game?.mode.variant as CricketVariantModes)
+    }
 };
+
+if(gameStore.game?.mode.variant === 'random-and-events') {
+    gameEventStore.startRandomEventLoop();
+}
 
 function playerScore(id:number, score: number) {
     gameCricketStore.pushScore(id, score)
+}
+
+function playerEventScore(id:number, score: number) {
+    gameCricketStore.pushEventScore(id, score);
+}
+
+function onClickStartEvent() {
+    gameEventStore.stopEvent();
+    gameEventStore.startEvent(15);
 }
 
 function endGame() {
     if(gameStore.game?.mode.mode == 'cricket') {
         gameCricketStore.resetGame();
     };
+    if(gameStore.game?.mode.variant === 'random-and-events') {
+        gameEventStore.stopRandomEventLoop();
+    }
 
     gameStore.endGame();
 
@@ -129,6 +174,12 @@ function replayGame() {
         gameCricketStore.startGame(gameStore.game?.mode.variant as CricketVariantModes)
     };
 }
+
+onBeforeUnmount(() => {
+    if(gameStore.game?.mode.variant === 'random-and-events') {
+        gameEventStore.stopRandomEventLoop();
+    }
+})
 </script>
 
 <style lang="scss" scoped>
@@ -180,5 +231,21 @@ function replayGame() {
 .blink-leave-to {
   transform: scale(1.5);
   opacity: 0;
+}
+
+.event-hurry-up {
+    @keyframes hurryUp {
+        0% {
+            @apply border-yellow-400 text-yellow-400;
+        }
+        50% {
+            @apply border-red-600 text-red-600;
+        }
+        100% {
+            @apply border-yellow-400 text-yellow-400;
+        }
+    }
+
+    animation: hurryUp 0.5s infinite;
 }
 </style>

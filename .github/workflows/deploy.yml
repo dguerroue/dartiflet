@@ -41,8 +41,6 @@ jobs:
 
           cd .docker/prod
 
-          docker compose -p dartiflet down
-
-          docker compose -p dartiflet up -d
+          docker compose up -d --build
 
           EOF

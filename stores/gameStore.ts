@@ -24,7 +24,7 @@ export const useGameStore = defineStore('game', () => {
     const gameModes: GameMode[] = [
         {
             mode: 'cricket',
-            variants: ['classic', 'random'],
+            variants: ['classic', 'random', 'random-and-events'],
         }
     ];
 

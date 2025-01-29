@@ -1,19 +1,20 @@
-import {Howl, Howler} from 'howler';
 import { defineStore } from 'pinia'
 import { useGameStore } from './gameStore';
 
-export type CricketVariantModes = 'classic' | 'random'
+export type CricketVariantModes = 'classic' | 'random' | 'random-and-events';
 
 export type PlayerScore = {
     playerId: number,
     scorePoints: number,
     scoresOpen: number[],
-    scoresClose: number[],
-    playerScoreHistory: number[]
+    playerScoreHistory: number[],
+    playerScoreEventHistory: number[]
 }
 
 export const useGameCricketStore = defineStore('gameCricket', () => {
     const gameStore = useGameStore();
+    const gameEventStore = useGameEventStore();
+    const { dartSound1, dartSound2, dartSound3, wallSound, undoSound, newEventSound } = useSoundEffect();
 
     const defaultCricketScores: [number, ...number[]] = [25, 20, 19, 18, 17, 16, 15];
 
@@ -27,21 +28,18 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
         state: 1 | 2 | 3
     }
 
-    
-
-    const playerIdsHistory: number[] = []
+    let playerIdsHistory: number[] = []
+    let scoreTypeHistory: Array<"score" | "event"> = []
     
     const playersScores = ref<PlayerScore[]>([]);
 
     function startGame(variant: CricketVariantModes) {
-        if(gameStore.game?.isStarted) {
-            return;
-        }
+        console.log('start cricket')
         
         if(variant == 'classic') {
             cricketScores.value = defaultCricketScores
         }
-        if(variant == 'random') {
+        if(variant == 'random' || variant == 'random-and-events') {
             function generateRandomArray(length: number, min: number = 1, max: number = 20): number[] {
                 const randomArray: number[] = [];
             
@@ -66,15 +64,23 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
         gameStore.startGame();
     }
 
+    function startEvent() {
+        console.log(gameEventStore.generateEventScore());
+    }
+
     function resetGame() {
         gameStore.resetGame();
 
-        playersScores.value.forEach(ps => {
-            ps.playerScoreHistory = [];
-            ps.scorePoints = 0;
-            ps.scoresClose = [];
-            ps.scoresOpen = [];
-        })
+        playerIdsHistory = [];
+        scoreTypeHistory = [];
+
+        // playersScores.value.forEach(ps => {
+        //     ps.scorePoints = 0;
+        //     ps.scoresOpen = [];
+        //     ps.playerScoreHistory = [];
+        //     ps.playerScoreEventHistory = [];
+        // })
+        playersScores.value = [];
     }
 
     function getScoresByPlayerId(playerId: number) {
@@ -117,31 +123,31 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
     }
 
     function pushScore(playerId: number, score: number, noSounds: boolean = false) {
+        const playerScore = getScoresByPlayerId(playerId);
+
         playerIdsHistory.push(playerId)
-        
-        if(getScoresByPlayerId(playerId) === undefined) {
+        scoreTypeHistory.push('score');
+
+        if(playerScore === undefined) {
             playersScores.value.push({
                 playerId: playerId,
                 scorePoints: 0,
                 scoresOpen: [],
-                scoresClose: [],
-                playerScoreHistory: []
-            })
-        }
+                playerScoreHistory: [score],
+                playerScoreEventHistory: []
+            });
 
-        const playerScore = getScoresByPlayerId(playerId);
-        if(playerScore) {
-
+            if(noSounds == false) {
+                dartSound1.play();
+            }
+        } else {
             playerScore.playerScoreHistory.push(score);
             
             if(checkClosedScore(score) == false) {
 
                 if(noSounds == false) {
                     // sounds effects
-                    getCountByScorePlayer(playerId, score)// Wall sound
-                    const dartSound1 = new Howl({ src: '/sounds/dart1.mp3', volume: 0.4});
-                    const dartSound2 = new Howl({ src: '/sounds/dart2.mp3', volume: 0.4});
-                    const dartSound3 = new Howl({ src: '/sounds/dart3.mp3', volume: 0.4});
+                    getCountByScorePlayer(playerId, score)
                     switch(getCountByScorePlayer(playerId, score)) {
                     case 1:
                         dartSound1.play();
@@ -165,26 +171,52 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
                 if(getCountByScorePlayer(playerId, score) > 3 || !cricketScores.value.includes(score)) {
                     playerScore.scorePoints += score
                 }
-    
+
                 checkPlayerWin(playerScore)
             }
         }
+    }
 
+    function pushEventScore(playerId: number, score: number, noSounds: boolean = false) {
+
+        playerIdsHistory.push(playerId);
+        scoreTypeHistory.push('event');
+        
+        
+        const playerScore = getScoresByPlayerId(playerId);
+        if(playerScore === undefined) {
+
+            playersScores.value.push({
+                playerId: playerId,
+                scorePoints: score,
+                scoresOpen: [],
+                playerScoreHistory: [],
+                playerScoreEventHistory: [score]
+            })
+            if(noSounds == false) {
+                dartSound3.play();
+            }
+        } else {
+            playerScore.playerScoreEventHistory.push(score);
+
+            // ça score !
+            playerScore.scorePoints += score;
+
+            if(noSounds == false) {
+                dartSound3.play();
+            } 
+
+            checkPlayerWin(playerScore)
+        }
     }
 
     function wallHit(playerId: number) {
-        // Wall sound
-        var sound = new Howl({
-            src: '/sounds/turtle_scream.mp3',
-            volume: 2,
-        });
-        sound.play();
+        wallSound.play();
         pushScore(playerId, -cricketScores.value[1], true);
     }
 
     function undo() {
-        
-        const dartSound1 = new Howl({ src: '/sounds/undo.mp3', volume: 0.3}).play();
+        undoSound.play();
 
         const lastActionPlayerId = playerIdsHistory.pop()
 
@@ -197,26 +229,55 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
         if(!playerScores) {
             return
         }
-        
-        const poppedScore = playerScores.playerScoreHistory.pop()
 
-        
-        if(poppedScore) {
-            if(getCountByScorePlayer(lastActionPlayerId, poppedScore) < 3 && cricketScores.value.includes(poppedScore)) {
-                playerScores.scoresOpen = playerScores.scoresOpen.filter(item => item != poppedScore)
-            } else {
+        const popperEventScore = scoreTypeHistory.pop();
+
+        if(popperEventScore == 'event') {
+            const poppedEventScore = playerScores.playerScoreEventHistory.pop();
+
+            if(poppedEventScore) {
                 const playerScore = getScoresByPlayerId(lastActionPlayerId);
-
-                if(playerScore !== undefined) {
-                    playerScore.scorePoints -= poppedScore;
-                }
     
+                if(playerScore !== undefined) {
+                    playerScore.scorePoints -= poppedEventScore;
+                }
+            }
+
+        } else if(popperEventScore == 'score') {
+            const poppedScore = playerScores.playerScoreHistory.pop()
+    
+            if(poppedScore) {
+                if(getCountByScorePlayer(lastActionPlayerId, poppedScore) < 3 && cricketScores.value.includes(poppedScore)) {
+                    playerScores.scoresOpen = playerScores.scoresOpen.filter(item => item != poppedScore)
+                } else {
+                    const playerScore = getScoresByPlayerId(lastActionPlayerId);
+    
+                    if(playerScore !== undefined) {
+                        playerScore.scorePoints -= poppedScore;
+                    }
+        
+                }
             }
         }
         
+        
     }
 
-    return { startGame, resetGame, cricketScores, playersScores, pushScore, wallHit, undo, getCountByScorePlayer, checkClosedScore, getScorePointsByPlayerId, getScoresByPlayerId }
+    return { 
+        startGame,
+        startEvent,
+        resetGame,
+        cricketScores,
+        playersScores,
+        pushScore,
+        pushEventScore,
+        wallHit,
+        undo,
+        getCountByScorePlayer,
+        checkClosedScore,
+        getScorePointsByPlayerId,
+        getScoresByPlayerId
+    }
 }, {
     persist: {
         storage: persistedState.localStorage
