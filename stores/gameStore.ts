@@ -7,7 +7,6 @@ export type GameMode = {
 };
 
 export type Game = {
-    id: number,
     mode: {
         mode: string,
         variant: string,
@@ -30,7 +29,6 @@ export const useGameStore = defineStore('game', () => {
 
     function newGame<Mode extends string, Variant extends string>(players: Player[], params: {mode: Mode, variant: Variant}) {
         game.value = {
-            id: 1,
             isStarted: false,
             mode: {
                 mode: params.mode,

@@ -156,26 +156,26 @@ function endGame() {
 }
 
 watch(gameStore, () => {
-    if(gameStore.winner) {
+    if(gameStore.winner && gameStore.game?.isStarted) {
         jsConfetti.addConfetti();
-        gameStore.stopGame();
 
         if(gameStore.game?.mode.variant === 'random-and-events') {
             gameEventStore.stopRandomEventLoop();
         }
+        
+        // push history record
+        historyStore.addHistoryRecord({
+            date: new Date(),
+            game: gameStore.game,
+            winnerPlayer: gameStore.winner,
+            scores: gameStore.game.players.map((player: Player) => ({
+                player: player,
+                score: gameCricketStore.getScorePointsByPlayerId(player.id)
+            }))
+        })
 
-        if(gameStore.game) {
-            // push history record
-            historyStore.addHistoryRecord({
-                date: new Date(),
-                game: gameStore.game,
-                winnerPlayer: gameStore.winner,
-                scores: gameStore.game.players.map((player: Player) => ({
-                    player: player,
-                    score: gameCricketStore.getScorePointsByPlayerId(player.id)
-                }))
-            })
-        }
+
+        gameStore.stopGame();
     }
 })
 

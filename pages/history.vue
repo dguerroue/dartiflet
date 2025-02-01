@@ -15,9 +15,9 @@
         </div>
 
         <div class="flex flex-col space-y-4 overflow-y-auto">
-            <div v-for="historyLine in history" :key="historyLine.id" class="rounded-xl bg-slate-800 p-4 text-white">
+            <div v-for="historyLine, index in history" :key="index" class="rounded-xl bg-slate-800 p-4 text-white">
                 <div class="mb-4 flex w-full items-center justify-between">
-                    <span class="text-xl font-bold" :class="isToday(historyLine.date) ? 'text-white' : 'text-slate-400'">{{ format(historyLine.date, "MM/dd/yyyy") }}</span>
+                    <span class="text-xl font-bold" :class="isToday(historyLine.date) ? 'text-white' : 'text-slate-400'">{{ format(historyLine.date, "dd/MM/yyyy") }}</span>
                     <span class="text-xl font-bold">{{ historyLine.winnerPlayer.name }}</span>
                     <span class="rounded-xl bg-slate-900 px-3 py-1">
                         {{ historyLine.gamemode }}

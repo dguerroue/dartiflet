@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 
 export type HistoryItem = {
-    id: number,
     date: Date,
     gamemode: string,
     players: Player[],
@@ -17,7 +16,6 @@ export const useHistoryStore = defineStore('history', () => {
 
     function addHistoryRecord(params: { date: Date, game: Game, winnerPlayer: Player, scores: {player: Player, score: number}[] }) {
         historyList.value.push({
-            id: historyList.value.length,
             date: params.date,
             gamemode: params.game.mode.mode,
             players: params.game.players,
