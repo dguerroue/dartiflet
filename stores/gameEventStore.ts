@@ -9,12 +9,10 @@ export const useGameEventStore = defineStore('gameEvent', () => {
 
     const { newEventSound } = useSoundEffect();
 
-    function generateEventScore() {
-        const possibleEventScore = [20, 19, 18, 17, 16, 15];
+    function generateEventScore(scores: number[]) {
+        const randomIndex = Math.floor(Math.random() * scores.length);
 
-        const randomIndex = Math.floor(Math.random() * possibleEventScore.length);
-
-        eventScore.value = possibleEventScore[randomIndex];
+        eventScore.value = scores[randomIndex];
 
         return eventScore.value;
     }
@@ -23,15 +21,35 @@ export const useGameEventStore = defineStore('gameEvent', () => {
         eventScore.value = null;
     }
 
-    function startRandomEventLoop(minSeconds: number = 40, maxSeconds: number = 120, eventDurationSeconds: number = 40) {
+    function startRandomEventLoop({
+        minSeconds,
+        maxSeconds,
+        eventDurationSeconds,
+        scores
+    }: {
+        minSeconds?: number,
+        maxSeconds?: number,
+        eventDurationSeconds?: number,
+        scores?: number[]
+    } = {
+        minSeconds: 40,
+        maxSeconds: 120,
+        eventDurationSeconds: 40,
+        scores: [20, 19, 18, 17, 16, 15]
+    }) {
         const randTimeout = Math.floor(Math.random() * (maxSeconds - minSeconds) + minSeconds);
         console.log('Next event in: ', randTimeout);
         clockEventId.value = setTimeout(() => {
             if(!isEventStarted.value) {
                 stopEvent();
-                startEvent(eventDurationSeconds);
+                startEvent(eventDurationSeconds, scores);
             }
-            startRandomEventLoop(eventDurationSeconds + minSeconds, maxSeconds, eventDurationSeconds);
+            startRandomEventLoop({
+                minSeconds: eventDurationSeconds + minSeconds,
+                maxSeconds: maxSeconds,
+                eventDurationSeconds: eventDurationSeconds, 
+                scores: scores
+            });
         }, randTimeout * 1000);
     }
 
@@ -43,12 +61,12 @@ export const useGameEventStore = defineStore('gameEvent', () => {
         }
     }
 
-    function startEvent(eventDurationSeconds: number) {
+    function startEvent(eventDurationSeconds: number, scores: number[]) {
         if(isEventStarted.value) {
             return;
         }
 
-        generateEventScore();
+        generateEventScore(scores);
         isEventStarted.value = true;
         
         if(eventDurationSeconds <= 0 || eventDurationSeconds > 59) {

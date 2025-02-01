@@ -63,10 +63,6 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
         gameStore.startGame();
     }
 
-    function startEvent() {
-        console.log(gameEventStore.generateEventScore());
-    }
-
     function resetGame() {
         gameStore.resetGame();
 
@@ -264,7 +260,6 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
 
     return { 
         startGame,
-        startEvent,
         resetGame,
         cricketScores,
         playersScores,
