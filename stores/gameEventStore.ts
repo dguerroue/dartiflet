@@ -1,3 +1,4 @@
+import { min } from 'date-fns';
 import { defineStore } from 'pinia'
 
 export const useGameEventStore = defineStore('gameEvent', () => {
@@ -22,35 +23,42 @@ export const useGameEventStore = defineStore('gameEvent', () => {
     }
 
     function startRandomEventLoop({
-        minSeconds,
-        maxSeconds,
-        eventDurationSeconds,
-        scores
+        minSeconds = 40,
+        maxSeconds = 120,
+        eventDurationSeconds = 40,
+        scores = [20, 19, 18, 17, 16, 15]
     }: {
         minSeconds?: number,
         maxSeconds?: number,
         eventDurationSeconds?: number,
         scores?: number[]
-    } = {
-        minSeconds: 40,
-        maxSeconds: 120,
-        eventDurationSeconds: 40,
-        scores: [20, 19, 18, 17, 16, 15]
-    }) {
+    } = {}) {
+        console.log({
+            minSeconds,
+            maxSeconds,
+            eventDurationSeconds,
+        })
         const randTimeout = Math.floor(Math.random() * (maxSeconds - minSeconds) + minSeconds);
-        console.log('Next event in: ', randTimeout);
+
         clockEventId.value = setTimeout(() => {
             if(!isEventStarted.value) {
                 stopEvent();
                 startEvent(eventDurationSeconds, scores);
             }
+
             startRandomEventLoop({
-                minSeconds: eventDurationSeconds + minSeconds,
+                minSeconds: minSeconds,
                 maxSeconds: maxSeconds,
                 eventDurationSeconds: eventDurationSeconds, 
                 scores: scores
             });
-        }, randTimeout * 1000);
+
+
+            console.log('Next event in: ', (randTimeout + eventDurationSeconds));
+            console.log('Next event at: ', new Date(Date.now() + (randTimeout + eventDurationSeconds) * 1000));
+
+            // start new event
+        }, (randTimeout + eventDurationSeconds) * 1000);
     }
 
     function stopRandomEventLoop() {
