@@ -3,10 +3,14 @@ import { defineStore } from 'pinia'
 
 export const useGameEventStore = defineStore('gameEvent', () => {
     const isEventStarted = ref(false);
+    const isEventHurryUp = ref(false);
     const eventTime = ref<number>();
-    const eventTimerId = ref<NodeJS.Timeout>();
     const eventScore = ref<number|null>(null);
-    const clockEventId = ref<NodeJS.Timeout>();
+    // const eventTimeoutId = ref<NodeJS.Timeout>();
+    // const eventLoopTimeoutId = ref<NodeJS.Timeout>();
+    const eventTimeoutIdCollection = ref<NodeJS.Timeout[]>([]);
+    const eventLoopTimeoutIdCollection = ref<NodeJS.Timeout[]>([]);
+    // const endCountEventTimeoutId = ref<NodeJS.Timeout>();
 
     const { newEventSound } = useSoundEffect();
 
@@ -40,7 +44,9 @@ export const useGameEventStore = defineStore('gameEvent', () => {
         })
         const randTimeout = Math.floor(Math.random() * (maxSeconds - minSeconds) + minSeconds);
 
-        clockEventId.value = setTimeout(() => {
+        console.log(`Next event in: ${(randTimeout + eventDurationSeconds)}s at: ${new Date(Date.now() + (randTimeout + eventDurationSeconds) * 1000).toTimeString().slice(0, 8) }`);
+
+        eventLoopTimeoutIdCollection.value.push(setTimeout(() => {
             if(!isEventStarted.value) {
                 stopEvent();
                 startEvent(eventDurationSeconds, scores);
@@ -54,19 +60,13 @@ export const useGameEventStore = defineStore('gameEvent', () => {
             });
 
 
-            console.log('Next event in: ', (randTimeout + eventDurationSeconds));
-            console.log('Next event at: ', new Date(Date.now() + (randTimeout + eventDurationSeconds) * 1000));
-
             // start new event
-        }, (randTimeout + eventDurationSeconds) * 1000);
+        }, (randTimeout + eventDurationSeconds) * 1000));
+
     }
 
     function stopRandomEventLoop() {
-        if (clockEventId.value) {
-
-            stopEvent();
-            clearTimeout(clockEventId.value);
-        }
+        stopEvent();
     }
 
     function startEvent(eventDurationSeconds: number, scores: number[]) {
@@ -84,30 +84,45 @@ export const useGameEventStore = defineStore('gameEvent', () => {
         eventTime.value = eventDurationSeconds;
         newEventSound.play();
         
-        eventTimerId.value = setInterval(() => {
+        eventTimeoutIdCollection.value.push(setInterval(() => {
             if(eventTime.value !== undefined) {
                 eventTime.value -= 1;
+
+                if (eventTime.value == 6) {
+                    isEventHurryUp.value = true;
+                    useSoundEffect().endEventSound.play();
+                }
                 
                 if (eventTime.value <= 0) {
                     stopEvent();
                 }
             }
-        }, 1000);
+        }, 1000));
     }
 
     function stopEvent() {
         resetEventScore();
         isEventStarted.value = false;
+        isEventHurryUp.value = false;
 
-        if (eventTimerId.value) {
-            clearInterval(eventTimerId.value);
-        }
+        eventLoopTimeoutIdCollection.value.forEach(timeoutId => {
+            clearTimeout(timeoutId);
+        });
+        eventTimeoutIdCollection.value.forEach(timeoutId => {
+            clearInterval(timeoutId);
+        });
+
+        eventLoopTimeoutIdCollection.value = [];
+        eventTimeoutIdCollection.value = [];
     }
 
     return {
+        eventTimeoutIdCollection,
+        eventLoopTimeoutIdCollection,
         eventScore,
         eventTime,
         isEventStarted,
+        isEventHurryUp,
         generateEventScore,
         resetEventScore,
         startRandomEventLoop,

@@ -81,7 +81,7 @@
                 ANNULER
             </button>
             <button type="button"
-                    :class="[gameEventStore.isEventStarted ? 'border-yellow-400 text-yellow-400' : 'border-slate-800 text-white', {'event-hurry-up': gameEventStore.isEventStarted && gameEventStore.eventTime && gameEventStore.eventTime <= 5}]"
+                    :class="[gameEventStore.isEventStarted ? 'border-yellow-400 text-yellow-400' : 'border-slate-800 text-white', {'event-hurry-up': gameEventStore.isEventHurryUp}]"
                     class="relative mb-4 flex h-14 grow cursor-pointer flex-col items-center justify-center rounded-lg border-4 bg-slate-800 text-lg font-bold  active:bg-slate-600"
                     @click="false && onClickStartEvent()">
                 <div class="min-w-[55px] text-center">
@@ -122,12 +122,7 @@ if(gameStore.game?.mode.variant === 'random-and-events' && gameStore.game.isStar
     const cricketScores = gameCricketStore.cricketScores;
     const eventScoreWithoutCricket = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1].filter(item => !cricketScores.includes(item)).splice(0, 6);
 
-    console.log('eventScoreWithoutCricket', eventScoreWithoutCricket);
-
     gameEventStore.startRandomEventLoop({
-        minSeconds: 40,
-        maxSeconds: 120,
-        eventDurationSeconds: 35,
         scores: eventScoreWithoutCricket
     });
 }
@@ -184,6 +179,15 @@ function replayGame() {
         gameCricketStore.resetGame();
         gameCricketStore.startGame(gameStore.game?.mode.variant as CricketVariantModes)
     };
+
+    if(gameStore.game?.mode.variant === 'random-and-events' && gameStore.game.isStarted === true) {
+        const cricketScores = gameCricketStore.cricketScores;
+        const eventScoreWithoutCricket = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1].filter(item => !cricketScores.includes(item)).splice(0, 6);
+
+        gameEventStore.startRandomEventLoop({
+            scores: eventScoreWithoutCricket
+        });
+    }
 }
 
 onBeforeUnmount(() => {

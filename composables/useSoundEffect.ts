@@ -11,6 +11,7 @@ function createSoundEffect() {
     const undoSound = new Howl({ src: '/sounds/undo.mp3', volume: 0.3 });
 
     const newEventSound = new Howl({ src: '/sounds/event.mp3', volume: 0.6 });
+    const endEventSound = new Howl({ src: '/sounds/countdown-beep-5s.mp3', volume: 0.6 });
 
     return {
         dartSound1,
@@ -18,7 +19,8 @@ function createSoundEffect() {
         dartSound3,
         wallSound,
         undoSound,
-        newEventSound
+        newEventSound,
+        endEventSound
     };
 }
 
