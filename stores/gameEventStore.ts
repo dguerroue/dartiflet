@@ -25,7 +25,7 @@ export const useGameEventStore = defineStore('gameEvent', () => {
     function startRandomEventLoop({
         minSeconds = 40,
         maxSeconds = 120,
-        eventDurationSeconds = 40,
+        eventDurationSeconds = 35,
         scores = [20, 19, 18, 17, 16, 15]
     }: {
         minSeconds?: number,

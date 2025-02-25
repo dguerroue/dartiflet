@@ -127,7 +127,7 @@ if(gameStore.game?.mode.variant === 'random-and-events' && gameStore.game.isStar
     gameEventStore.startRandomEventLoop({
         minSeconds: 40,
         maxSeconds: 120,
-        eventDurationSeconds: 40,
+        eventDurationSeconds: 35,
         scores: eventScoreWithoutCricket
     });
 }
