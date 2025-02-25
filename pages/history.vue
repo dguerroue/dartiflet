@@ -22,7 +22,7 @@
                 <HistoryCard v-for="historyLine, index in historyStore.historyToday"
                              :key="index"
                              :history-item="historyLine"
-                             date-format="H:mm" />
+                             date-format="HH:mm" />
             </div>
 
             <div class="flex flex-col gap-4">
@@ -32,7 +32,7 @@
                 <HistoryCard v-for="historyLine, index in historyStore.historyPast"
                              :key="index"
                              :history-item="historyLine"
-                             date-format="dd/MM/yyyy - H:mm" />
+                             date-format="dd/MM/yyyy - HH:mm" />
             </div>
         </div>
     </div>
