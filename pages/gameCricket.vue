@@ -118,10 +118,17 @@ if(gameStore.game?.mode.mode == 'cricket') {
     }
 };
 
+
+
 if(gameStore.game?.mode.variant === 'random-and-events' && gameStore.game.isStarted === true) {
+    startRandomEventLoop();
+}
+
+function startRandomEventLoop() {
     const cricketScores = gameCricketStore.cricketScores;
     const eventScoreWithoutCricket = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1].filter(item => !cricketScores.includes(item)).splice(0, 6);
 
+    gameEventStore.stopEvent();
     gameEventStore.startRandomEventLoop({
         scores: eventScoreWithoutCricket
     });
@@ -136,8 +143,7 @@ function playerEventScore(id:number, score: number) {
 }
 
 function onClickStartEvent() {
-    gameEventStore.stopEvent();
-    gameEventStore.startEvent(15, [20, 19, 18, 17, 16, 15]);
+    startRandomEventLoop();
 }
 
 function endGame() {
@@ -181,12 +187,7 @@ function replayGame() {
     };
 
     if(gameStore.game?.mode.variant === 'random-and-events' && gameStore.game.isStarted === true) {
-        const cricketScores = gameCricketStore.cricketScores;
-        const eventScoreWithoutCricket = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1].filter(item => !cricketScores.includes(item)).splice(0, 6);
-
-        gameEventStore.startRandomEventLoop({
-            scores: eventScoreWithoutCricket
-        });
+        startRandomEventLoop();
     }
 }
 
