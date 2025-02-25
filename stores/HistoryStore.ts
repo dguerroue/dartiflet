@@ -1,8 +1,10 @@
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
+import { isToday } from 'date-fns';
 
 export type HistoryItem = {
     date: Date,
     gamemode: string,
+    variant: string,
     players: Player[],
     winnerPlayer: Player,
     scores: {
@@ -18,6 +20,7 @@ export const useHistoryStore = defineStore('history', () => {
         historyList.value.push({
             date: params.date,
             gamemode: params.game.mode.mode,
+            variant: params.game.mode.variant,
             players: params.game.players,
             winnerPlayer: params.winnerPlayer,
             scores: params.scores
@@ -32,9 +35,23 @@ export const useHistoryStore = defineStore('history', () => {
         });
     }
 
+    /** Getters */
+
+    const historyToday = computed(() => {
+        const history = getHistory();
+        return history.filter((historyLine) => isToday(historyLine.date));
+    });
+
+    const historyPast = computed(() => {
+        const history = getHistory();
+        return history.filter((historyLine) => !isToday(historyLine.date));
+    });
+
     return {
         historyList,
         getHistory,
+        historyToday,
+        historyPast,
         addHistoryRecord
     }
 }, {

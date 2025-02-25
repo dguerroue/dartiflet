@@ -14,31 +14,32 @@
             </h1>
         </div>
 
-        <div class="flex flex-col space-y-4 overflow-y-auto">
-            <div v-for="historyLine, index in history" :key="index" class="rounded-xl bg-slate-800 p-4 text-white">
-                <div class="mb-4 flex w-full items-center justify-between">
-                    <span class="text-xl font-bold" :class="isToday(historyLine.date) ? 'text-white' : 'text-slate-400'">{{ format(historyLine.date, "dd/MM/yyyy") }}</span>
-                    <span class="text-xl font-bold">{{ historyLine.winnerPlayer.name }}</span>
-                    <span class="rounded-xl bg-slate-900 px-3 py-1">
-                        {{ historyLine.gamemode }}
-                    </span>
-                </div>
-
-                <div v-for="score, key in historyLine.scores" :key="key" class="flex justify-between py-1">
-                    <span class="text-lg" :class="{'winner': score.player.id === historyLine.winnerPlayer.id}">{{ score.player.name }}</span>
-                    <span class="text-xl font-bold">{{ score.score }}</span>
-                </div>
+        <div class="flex flex-col gap-14 overflow-y-auto">
+            <div class="flex flex-col gap-4">
+                <p class="text-lg font-bold text-slate-400">
+                    Aujourd'hui
+                </p>
+                <HistoryCard v-for="historyLine, index in historyStore.historyToday"
+                             :key="index"
+                             :history-item="historyLine"
+                             date-format="H:mm" />
             </div>
-            <!-- {{ historyLine.players }} -->
+
+            <div class="flex flex-col gap-4">
+                <p class="text-lg font-bold text-slate-400">
+                    Autres parties
+                </p>
+                <HistoryCard v-for="historyLine, index in historyStore.historyPast"
+                             :key="index"
+                             :history-item="historyLine"
+                             date-format="dd/MM/yyyy - H:mm" />
+            </div>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { format, isToday } from 'date-fns';
 const historyStore = useHistoryStore();
-
-const history = historyStore.getHistory();
 </script>
 
 <style lang="scss" scoped></style>
