@@ -24,12 +24,12 @@
                             <IconArrowLeft />
                         </button>
                     </div>
-                    <div class="flex grow items-center justify-center text-4xl font-bold " :class="gameEventStore.isEventStarted ? 'text-yellow-400' : 'text-white'">
-                        E
+                    <div class="flex grow items-center justify-center" :class="gameEventStore.isEventStarted ? 'text-yellow-400' : 'text-white'">
+                        <IconStarShooting size="28" />
                     </div>
                     <div v-for="score in gameCricketStore.cricketScores"
                          :key="score"
-                         class="flex grow items-center justify-center text-4xl font-bold text-white"
+                         class="flex grow items-center justify-center text-3xl font-bold text-white sm:text-4xl"
                          :class="{'opacity-15': gameCricketStore.checkClosedScore(score)}">
                         {{ score == 25 ? 'B' : score }}
                     </div>
@@ -180,6 +180,10 @@ function replayGame() {
 onBeforeUnmount(() => {
     gameEventStore.stopClock();
 })
+
+document.addEventListener("visibilitychange", () => {
+    // TODO: stop le clock si la visibility est a false
+});
 
 </script>
 
