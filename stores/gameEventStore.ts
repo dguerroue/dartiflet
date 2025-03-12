@@ -5,76 +5,102 @@ export const useGameEventStore = defineStore('gameEvent', () => {
     const isEventStarted = ref(false);
     const isEventHurryUp = ref(false);
     const eventTime = ref<number>();
-    const eventScore = ref<number|null>(null);
-    // const eventTimeoutId = ref<NodeJS.Timeout>();
-    // const eventLoopTimeoutId = ref<NodeJS.Timeout>();
-    const eventTimeoutIdCollection = ref<NodeJS.Timeout[]>([]);
-    const eventLoopTimeoutIdCollection = ref<NodeJS.Timeout[]>([]);
-    // const endCountEventTimeoutId = ref<NodeJS.Timeout>();
+    const eventScoreTarget = ref<number|null>(null);
+    
+    const clockIntervalId = ref<NodeJS.Timeout>();
+    const clockValue = ref<number>(0);
+    const nextEventClockValue = ref<number|null>(null);
+
+    const defaultMinIntervalSeconds = 40;
+    const defaultMaxIntervalSeconds = 120;
+    const defaultEventDurationSeconds = 35;
+
+    const defaultPossibleEventScore = [20, 19, 18, 17, 16, 15];
+    const possibleEventScore = ref<number[]>(defaultPossibleEventScore);
 
     const { newEventSound } = useSoundEffect();
 
-    function generateEventScore(scores: number[]) {
-        const randomIndex = Math.floor(Math.random() * scores.length);
+    function startClock() {
+        clockIntervalId.value = setInterval(() => {
+            clockValue.value += 1;
 
-        eventScore.value = scores[randomIndex];
+            if(isEventStarted.value) {
+                // manage current event
+                if(eventTime.value !== undefined) {
+                    eventTime.value -= 1;
+    
+                    if (eventTime.value == 6) {
+                        isEventHurryUp.value = true;
+                        useSoundEffect().endEventSound.play();
+                    }
+                    
+                    if (eventTime.value <= 0) {
+                        stopAndResetEvent();
+                    }
+                }
+            } else if(!nextEventClockValue.value) {
+                const [nexEventTime] = getNextEventTime(clockValue.value);
 
-        return eventScore.value;
+                nextEventClockValue.value = nexEventTime;
+
+            } else {
+                if(clockValue.value >= nextEventClockValue.value) {
+                    startRandomEvent();
+                }
+            }
+        }, 1000);
     }
 
-    function resetEventScore() {
-        eventScore.value = null;
+    /**
+     * Stop the clock and reset event values
+     */
+    function stopClock() {
+        console.log('Stop clock and reset event values');
+        if(clockIntervalId.value) {
+            clearInterval(clockIntervalId.value);
+        }
+
+        clockValue.value = 0;
+        stopAndResetEvent();
     }
 
-    function startRandomEventLoop({
-        minSeconds = 40,
-        maxSeconds = 120,
-        eventDurationSeconds = 35,
-        scores = [20, 19, 18, 17, 16, 15]
-    }: {
-        minSeconds?: number,
-        maxSeconds?: number,
-        eventDurationSeconds?: number,
-        scores?: number[]
-    } = {}) {
+    /**
+     * Get the next event time and the time in second remaining until the next event
+     * 
+     */
+    function getNextEventTime(offsetSeconds: number): [number, Date] {
+        const minSeconds = defaultMinIntervalSeconds;
+        const maxSeconds = defaultMaxIntervalSeconds;
+
+        const randSeconds = Math.floor(Math.random() * (maxSeconds - minSeconds) + minSeconds);
+
+        const nextEventDate = new Date(Date.now() + (offsetSeconds + randSeconds) * 1000);
+        const nextEventTime = offsetSeconds + randSeconds;
+
+        console.log(`Next event at: ${new Date(Date.now() + randSeconds * 1000).toTimeString().slice(0, 8) }, in: ${(randSeconds)}s `);
+
+        return [nextEventTime, nextEventDate];
+    }
+
+    function startRandomEvent() {
+        const minSeconds = defaultMinIntervalSeconds;
+        const maxSeconds = defaultMaxIntervalSeconds;
+        const eventDurationSeconds = defaultEventDurationSeconds;
+
         console.log({
             minSeconds,
             maxSeconds,
             eventDurationSeconds,
         })
-        const randTimeout = Math.floor(Math.random() * (maxSeconds - minSeconds) + minSeconds);
-
-        console.log(`Next event in: ${(randTimeout + eventDurationSeconds)}s at: ${new Date(Date.now() + (randTimeout + eventDurationSeconds) * 1000).toTimeString().slice(0, 8) }`);
-
-        eventLoopTimeoutIdCollection.value.push(setTimeout(() => {
-            if(!isEventStarted.value) {
-                stopEvent();
-                startEvent(eventDurationSeconds, scores);
-            }
-
-            startRandomEventLoop({
-                minSeconds: minSeconds,
-                maxSeconds: maxSeconds,
-                eventDurationSeconds: eventDurationSeconds, 
-                scores: scores
-            });
-
-
-            // start new event
-        }, (randTimeout + eventDurationSeconds) * 1000));
-
-    }
-
-    function stopRandomEventLoop() {
-        stopEvent();
-    }
-
-    function startEvent(eventDurationSeconds: number, scores: number[]) {
+        
         if(isEventStarted.value) {
             return;
         }
 
-        generateEventScore(scores);
+        // pick one score randomly
+        const randomIndex = Math.floor(Math.random() * possibleEventScore.value.length);
+        eventScoreTarget.value = possibleEventScore.value[randomIndex];
+
         isEventStarted.value = true;
         
         if(eventDurationSeconds <= 0 || eventDurationSeconds > 59) {
@@ -83,51 +109,23 @@ export const useGameEventStore = defineStore('gameEvent', () => {
 
         eventTime.value = eventDurationSeconds;
         newEventSound.play();
-        
-        eventTimeoutIdCollection.value.push(setInterval(() => {
-            if(eventTime.value !== undefined) {
-                eventTime.value -= 1;
-
-                if (eventTime.value == 6) {
-                    isEventHurryUp.value = true;
-                    useSoundEffect().endEventSound.play();
-                }
-                
-                if (eventTime.value <= 0) {
-                    stopEvent();
-                }
-            }
-        }, 1000));
     }
 
-    function stopEvent() {
-        resetEventScore();
+    function stopAndResetEvent() {
         isEventStarted.value = false;
+
         isEventHurryUp.value = false;
-
-        eventLoopTimeoutIdCollection.value.forEach(timeoutId => {
-            clearTimeout(timeoutId);
-        });
-        eventTimeoutIdCollection.value.forEach(timeoutId => {
-            clearInterval(timeoutId);
-        });
-
-        eventLoopTimeoutIdCollection.value = [];
-        eventTimeoutIdCollection.value = [];
+        eventScoreTarget.value = null;
+        nextEventClockValue.value = null;
     }
 
     return {
-        eventTimeoutIdCollection,
-        eventLoopTimeoutIdCollection,
-        eventScore,
+        eventScoreTarget,
         eventTime,
         isEventStarted,
         isEventHurryUp,
-        generateEventScore,
-        resetEventScore,
-        startRandomEventLoop,
-        stopRandomEventLoop,
-        startEvent,
-        stopEvent
+        possibleEventScore,
+        startClock,
+        stopClock
     }
 });

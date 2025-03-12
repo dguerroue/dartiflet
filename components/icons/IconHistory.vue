@@ -9,11 +9,7 @@
 </template>
 
 <script lang="ts" setup>
-withDefaults(defineProps<{
-  size?: string;
-}>(), {
+withDefaults(defineProps<{size?: string;}>(), {
     size: '24',
 });
 </script>
-
-<style lang="scss" scoped></style>

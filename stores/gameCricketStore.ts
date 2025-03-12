@@ -33,7 +33,7 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
     
     const playersScores = ref<PlayerScore[]>([]);
 
-    function startGame(variant: CricketVariantModes) {
+    function initGame(variant: CricketVariantModes) {
         
         if(variant == 'classic') {
             cricketScores.value = defaultCricketScores
@@ -69,12 +69,6 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
         playerIdsHistory = [];
         scoreTypeHistory = [];
 
-        // playersScores.value.forEach(ps => {
-        //     ps.scorePoints = 0;
-        //     ps.scoresOpen = [];
-        //     ps.playerScoreHistory = [];
-        //     ps.playerScoreEventHistory = [];
-        // })
         playersScores.value = [];
     }
 
@@ -126,7 +120,7 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
         if(playerScore === undefined) {
             playersScores.value.push({
                 playerId: playerId,
-                scorePoints: 0,
+                scorePoints: score,
                 scoresOpen: [],
                 playerScoreHistory: [score],
                 playerScoreEventHistory: []
@@ -259,7 +253,7 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
     }
 
     return { 
-        startGame,
+        initGame,
         resetGame,
         cricketScores,
         playersScores,

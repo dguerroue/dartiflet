@@ -36,6 +36,49 @@ export const useGameStore = defineStore('game', () => {
             },
             players: players
         }
+
+        if(params.mode == 'cricket') {
+
+            if(params.variant == 'random-and-events') {
+                navigateTo({
+                    path: '/game/cricket/random-and-events',
+                })
+            }
+            if(params.variant == 'random') {
+                navigateTo({
+                    path: '/game/cricket/classic',
+                })
+            }
+            if(params.variant == 'classic') {
+                navigateTo({
+                    path: '/game/cricket/classic',
+                })
+            }
+        }
+    }
+
+    function resumeGame() {
+        if(!game.value?.isStarted) {
+            return
+        } else {
+            if(game.value?.mode.mode === 'cricket') {
+                if(game.value.mode.variant === 'random-and-events') {
+                    navigateTo({
+                        path: '/game/cricket/random-and-events',
+                    })
+                }
+                if(game.value.mode.variant === 'random') {
+                    navigateTo({
+                        path: '/game/cricket/classic',
+                    })
+                }
+                if(game.value.mode.variant === 'classic') {
+                    navigateTo({
+                        path: '/game/cricket/classic',
+                    })
+                }
+            }
+        }
     }
 
     function startGame() {
@@ -49,12 +92,6 @@ export const useGameStore = defineStore('game', () => {
         }
     }
 
-    function endGame() {
-        game.value = null;
-        stopGame();
-        resetGame();
-    }
-
     function setWinner(playerId: number) {
         winner.value = game.value?.players.find(player => player.id == playerId);
     }
@@ -63,7 +100,7 @@ export const useGameStore = defineStore('game', () => {
         winner.value = undefined
     }
 
-    return { newGame, startGame, stopGame, endGame, resetGame, game, gameModes, setWinner, winner }
+    return { newGame, startGame, resumeGame, stopGame, resetGame, game, gameModes, setWinner, winner }
 }, {
     persist: {
         storage: persistedState.localStorage

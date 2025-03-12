@@ -23,7 +23,7 @@
         </div>
 
         <div class="flex flex-col gap-4">
-            <button v-if="gameStore.game?.isStarted" class="mb-6 rounded-lg bg-white p-4 text-sm" @click="navigateTo('gameCricket')">
+            <button v-if="gameStore.game?.isStarted" class="mb-6 rounded-lg bg-white p-4 text-sm" @click="gameStore.resumeGame()">
                 <span class="flex items-center justify-between">
                     Reprendre la partie en cours <IconChevronRight size="20" />
                 </span>
@@ -84,7 +84,6 @@ function onStartNewGame() {
     if(playerStore.players.length) {
         if(selectedGameMode.value.mode == 'cricket') {
             gameStore.newGame<'cricket', CricketVariantModes>(playerStore.players, {mode: selectedGameMode.value.mode, variant: selectedGameMode.value.variant as CricketVariantModes});
-            navigateTo('gameCricket')
         }
     }
 }
