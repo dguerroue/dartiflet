@@ -92,6 +92,14 @@ export const useGameStore = defineStore('game', () => {
                     })
                 }
             }
+
+            if(game.value?.mode.mode == 'battlechips') {
+                if(game.value.mode.variant == 'classic') {
+                    navigateTo({
+                        path: '/game/battlechips/classic',
+                    })
+                }
+            }
         }
     }
 
