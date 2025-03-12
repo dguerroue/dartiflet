@@ -2,8 +2,8 @@ import { defineStore } from 'pinia'
 import type { Player } from './playerStore';
 
 export type GameMode = {
-    mode: string,
-    variants: string[],
+    mode: 'cricket' | 'battlechips',
+    variants: ('random-and-events' | 'classic' | 'random')[],
 };
 
 export type Game = {
@@ -23,11 +23,15 @@ export const useGameStore = defineStore('game', () => {
     const gameModes: GameMode[] = [
         {
             mode: 'cricket',
-            variants: ['classic', 'random', 'random-and-events'],
+            variants: ['random-and-events', 'classic', 'random'],
+        },
+        {
+            mode: 'battlechips',
+            variants: ['classic'],
         }
     ];
 
-    function newGame<Mode extends string, Variant extends string>(players: Player[], params: {mode: Mode, variant: Variant}) {
+    function newGame(players: Player[], params: {mode: string, variant: string}) {
         game.value = {
             isStarted: false,
             mode: {
@@ -36,6 +40,8 @@ export const useGameStore = defineStore('game', () => {
             },
             players: players
         }
+
+        console.log(params)
 
         if(params.mode == 'cricket') {
 
@@ -52,6 +58,14 @@ export const useGameStore = defineStore('game', () => {
             if(params.variant == 'classic') {
                 navigateTo({
                     path: '/game/cricket/classic',
+                })
+            }
+        }
+
+        if(params.mode == 'battlechips') {
+            if(params.variant == 'classic') {
+                navigateTo({
+                    path: '/game/battlechips/classic',
                 })
             }
         }

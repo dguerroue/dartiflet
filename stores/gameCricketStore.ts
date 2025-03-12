@@ -13,14 +13,11 @@ export type PlayerScore = {
 
 export const useGameCricketStore = defineStore('gameCricket', () => {
     const gameStore = useGameStore();
-    const gameEventStore = useGameEventStore();
-    const { dartSound1, dartSound2, dartSound3, wallSound, undoSound, newEventSound } = useSoundEffect();
+    const { dartSound1, dartSound2, dartSound3, wallSound, undoSound } = useSoundEffect();
 
     const defaultCricketScores: [number, ...number[]] = [25, 20, 19, 18, 17, 16, 15];
 
     const cricketScores = ref<[number, ...number[]]>(defaultCricketScores);
-
-    const winnerPlayerId = ref<number>();
 
     // TODO: essayer de changer le type de score par ça:
     type Score = {

@@ -82,9 +82,7 @@ const noGameModeSelected = computed(() => selectedGameModeRef.value === "");
 function onStartNewGame() {
    
     if(playerStore.players.length) {
-        if(selectedGameMode.value.mode == 'cricket') {
-            gameStore.newGame<'cricket', CricketVariantModes>(playerStore.players, {mode: selectedGameMode.value.mode, variant: selectedGameMode.value.variant as CricketVariantModes});
-        }
+        gameStore.newGame(playerStore.players, {mode: selectedGameMode.value.mode, variant: selectedGameMode.value.variant});
     }
 }
 </script>
