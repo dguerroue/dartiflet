@@ -120,7 +120,7 @@ export const useGameCricketStore = defineStore('gameCricket', () => {
         if(playerScore === undefined) {
             playersScores.value.push({
                 playerId: playerId,
-                scorePoints: score,
+                scorePoints: score < 0 ? score : 0, // if start with wall
                 scoresOpen: [],
                 playerScoreHistory: [score],
                 playerScoreEventHistory: []

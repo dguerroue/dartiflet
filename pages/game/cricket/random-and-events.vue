@@ -24,7 +24,7 @@
                             <IconArrowLeft />
                         </button>
                     </div>
-                    <div v-if="isEventMode" class="flex grow items-center justify-center text-4xl font-bold " :class="gameEventStore.isEventStarted ? 'text-yellow-400' : 'text-white'">
+                    <div class="flex grow items-center justify-center text-4xl font-bold " :class="gameEventStore.isEventStarted ? 'text-yellow-400' : 'text-white'">
                         E
                     </div>
                     <div v-for="score in gameCricketStore.cricketScores"
@@ -52,10 +52,10 @@
                         </div>
                     </div>
                     <!-- Start Event row -->
-                    <div v-if="isEventMode && !gameEventStore.isEventStarted" class="relative flex grow select-none flex-col items-center justify-center">
+                    <div v-if="!gameEventStore.isEventStarted" class="relative flex grow select-none flex-col items-center justify-center">
                         <span class="cross-step-0"></span>
                     </div>
-                    <div v-if="isEventMode && gameEventStore.isEventStarted && gameEventStore.eventScoreTarget"
+                    <div v-if="gameEventStore.isEventStarted && gameEventStore.eventScoreTarget"
                          class="relative flex grow cursor-pointer select-none flex-col items-center justify-center text-yellow-400 transition-colors active:bg-white/5"
                          @click="playerEventScoring(player.id, gameEventStore.eventScoreTarget)">
                         <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center text-4xl font-bold">{{ gameEventStore.eventScoreTarget }}</span>
@@ -108,7 +108,7 @@ const historyStore = useHistoryStore();
 const gameEventStore = useGameEventStore();
 const gameEventStoreRefs = storeToRefs(gameEventStore);
 
-const isEventMode = gameStore.game?.mode.variant.includes('event');
+const gameFirstScore = ref(false);
 
 if(gameStore.game?.isStarted == false) {
     gameCricketStore.resetGame();
@@ -127,7 +127,12 @@ function initRandomEventLoop() {
 }
 
 function playerScoring(id:number, score: number) {
-    gameCricketStore.pushScore(id, score)
+    gameCricketStore.pushScore(id, score);
+
+    if(!gameFirstScore.value) {
+        gameFirstScore.value = true;
+        initRandomEventLoop();
+    }
 }
 
 function playerEventScoring(id:number, score: number) {
@@ -172,9 +177,6 @@ function replayGame() {
     }
 }
 
-onMounted(() => {
-    initRandomEventLoop();
-})
 onBeforeUnmount(() => {
     gameEventStore.stopClock();
 })
