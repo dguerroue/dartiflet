@@ -12,8 +12,9 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
     const gameStore = useGameStore();
     const { dartSound1, dartSound2, dartSound3, wallSound, undoSound } = useSoundEffect();
 
-    let playerIdsHistory: number[] = []
+    const playerIdsHistory = ref<number[]>([]);
     
+    const playersLoosers = ref<number[]>([]);
     const playersShips = ref<PlayerShips[]>([]);
 
     function generateShips(numPlayers: number) {
@@ -54,11 +55,10 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
         
         generateShips(gameStore.game.players.length);
 
-
         gameStore.startGame();
     }
 
-    function getPlayerShipsByPlayerId(playerId: number): number[] | undefined {
+    function getOrderedPlayerShipsByPlayerId(playerId: number): number[] | undefined {
 
         // return all ships number in order
         const playerShips = playersShips.value.find((playerShips) => playerShips.playerId == playerId);
@@ -75,7 +75,8 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
     function resetGame() {
         gameStore.resetGame();
 
-        playerIdsHistory = [];
+        playerIdsHistory.value = [];
+        playersLoosers.value = [];
         playersShips.value = [];
     }
 
@@ -96,129 +97,118 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
     //     return numberOfOpenScore >= numPlayers
     // }
 
-    function checkPlayerWin(playerScore: PlayerScore) {
-        if(false) {
-            gameStore.setWinner(playerScore.playerId);
+    function checkWinner() {
+        if(playersLoosers.value.length == gameStore.game!.players.length - 1) {
+            const winner = gameStore.game?.players.find(p => !playersLoosers.value.includes(p.id));
+
+            if(winner) {
+                gameStore.setWinner(winner.id);
+            }
         }
     }
 
-    function pushScore(playerId: number, score: number, noSounds: boolean = false) {
+    function hitPlayerShip(playerId: number, shipId: number, noSounds: boolean = false) {
+        if(checkShipDestroy(playerId, shipId)) {
+            return;
+        }
 
-        playerIdsHistory.push(playerId);
+        const playerShips = playersShips.value.find((playerShips) => playerShips.playerId == playerId);
 
+        playerIdsHistory.value.push(playerId);
+        playerShips?.playerShipsHitHistory.push(shipId);
 
+        // sounds effects
+        if(noSounds == false) {
+            switch(getCountShipHit(playerId, shipId)) {
+            case 1:
+                dartSound1.play();
+                break;
+            case 2:
+                dartSound2.play();
+                break;
+            case 3:
+                dartSound3.play();
+            }
+        }
 
+        if(getCountShipHit(playerId, shipId) >= 3) {
+            playerShips?.shipsDestroyed.push(shipId);
+        }
 
+        if(playerShips?.shipsDestroyed.length === playerShips?.ships.length) {
+            playersLoosers.value.push(playerId);
+        }
 
+        // TODO: check player win
+        checkWinner();
+    }
 
+    function getCountShipHit(playerId: number, shipId: number) {
+        const playerShips = playersShips.value.find((playerShips) => playerShips.playerId == playerId);
 
-        // TODO: implement this, when player hits a ship
-        console.log(`player ${playerId}, ship ${score} hit`);
+        if(playerShips === undefined) {
+            return 0;
+        }
 
+        return playerShips.playerShipsHitHistory.reduce((acc, value) => {
+            return value === shipId ? acc + 1 : acc;
+        }, 0);
+    }
 
+    function getCountShipLeft(playerId: number) {
+        const playerShips = playersShips.value.find((playerShips) => playerShips.playerId == playerId);
 
+        if(playerShips === undefined) {
+            return 0;
+        }
 
+        return playerShips.ships.length - playerShips.shipsDestroyed.length;
+    }
 
+    function checkShipDestroy(playerId: number, shipId: number) {
+        const playerShips = playersShips.value.find((playerShips) => playerShips.playerId == playerId);
 
-        // if(playerScore === undefined) {
-        //     playersScores.value.push({
-        //         playerId: playerId,
-        //         scorePoints: score < 0 ? score : 0, // if start with wall
-        //         scoresOpen: [],
-        //         playerScoreHistory: [score],
-        //         playerScoreEventHistory: []
-        //     });
+        if(playerShips === undefined) {
+            return false;
+        }
 
-        //     if(noSounds == false) {
-        //         dartSound1.play();
-        //     }
-        // } else {
-        //     playerScore.playerScoreHistory.push(score);
-            
-        //     if(checkClosedScore(score) == false) {
-
-        //         if(noSounds == false) {
-        //             // sounds effects
-        //             getCountByScorePlayer(playerId, score)
-        //             switch(getCountByScorePlayer(playerId, score)) {
-        //             case 1:
-        //                 dartSound1.play();
-        //                 break;
-        //             case 2:
-        //                 dartSound2.play();
-        //                 break;
-        //             case 3:
-        //                 dartSound3.play();
-        //             }
-
-        //             if(getCountByScorePlayer(playerId, score) > 3) {
-        //                 dartSound3.play();
-        //             }
-        //         }
-
-        //         checkPlayerWin(playerScore)
-        // }
-        // }
+        return getCountShipHit(playerId, shipId) >= 3;
     }
 
     function wallHit(playerId: number) {
         wallSound.play();
     }
 
+
+
     function undo() {
         undoSound.play();
 
-        const lastActionPlayerId = playerIdsHistory.pop()
+        const lastActionPlayerId = playerIdsHistory.value.pop();
 
         if(lastActionPlayerId == undefined) {
             return
         }
 
-        // const playerScores = playersScores.value.find((player) => player.playerId == lastActionPlayerId)
+        const playerShips = playersShips.value.find(ps => ps.playerId == lastActionPlayerId);
 
-        // if(!playerScores) {
-        //     return
-        // }
+        if(playerShips === undefined) {
+            return;
+        }
 
-        // const popperEventScore = scoreTypeHistory.pop();
-
-        // if(popperEventScore == 'event') {
-        //     const poppedEventScore = playerScores.playerScoreEventHistory.pop();
-
-        //     if(poppedEventScore) {
-        //         const playerScore = getScoresByPlayerId(lastActionPlayerId);
-    
-        //         if(playerScore !== undefined) {
-        //             playerScore.scorePoints -= poppedEventScore;
-        //         }
-        //     }
-
-        // } else if(popperEventScore == 'score') {
-        //     const poppedScore = playerScores.playerScoreHistory.pop()
-    
-        //     if(poppedScore) {
-        //         if(getCountByScorePlayer(lastActionPlayerId, poppedScore) < 3 && cricketScores.value.includes(poppedScore)) {
-        //             playerScores.scoresOpen = playerScores.scoresOpen.filter(item => item != poppedScore)
-        //         } else {
-        //             const playerScore = getScoresByPlayerId(lastActionPlayerId);
-    
-        //             if(playerScore !== undefined) {
-        //                 playerScore.scorePoints -= poppedScore;
-        //             }
-        
-        //         }
-        //     }
-        // }
-        
-        
+        const popedShip = playerShips.playerShipsHitHistory.pop();
     }
 
-    return { 
+    return {
+        playerIdsHistory,
+        playersShips,
         initGame,
         resetGame,
-        getPlayerShipsByPlayerId,
-        playersShips,
-        pushScore,
+        getOrderedPlayerShipsByPlayerId,
+        hitPlayerShip,
+        getCountShipHit,
+        getCountShipLeft,
+        checkShipDestroy,
         wallHit,
         undo
     }

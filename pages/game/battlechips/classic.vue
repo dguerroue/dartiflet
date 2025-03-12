@@ -1,7 +1,7 @@
 <template>
     <div class="relative flex h-full flex-col ">
         <div v-if="gameStore.winner" id="backdrop" class="fixed left-0 top-0 z-20 size-full bg-black/60"></div>
-        <div v-if="gameStore.winner" class="absolute left-1/2 top-1/2 z-20 flex w-full max-w-[400px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 rounded-lg bg-slate-800 py-16 font-bold">
+        <div v-if="gameStore.winner" class="absolute left-1/2 top-1/2 z-30 flex w-full max-w-[400px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-4 rounded-lg bg-slate-800 py-16 font-bold">
             <span class="mb-6 text-center text-xl text-white"><span class="text-2xl capitalize">{{ gameStore.winner.name }}</span><br />a gagné la partie !</span>
             <div class="flex flex-col gap-6">
                 <div class="absolute left-1/2 top-0 w-1/3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-800 p-5" @click="jsConfetti.addConfetti()">
@@ -33,25 +33,26 @@
                         <div class="flex w-full items-center">
                             <div class="flex grow flex-col items-center justify-center px-3">
                                 <span class="text-nowrap capitalize">{{ player.name }}</span>
-                                ships left
+                                {{ gameBattlechipsStore.getCountShipLeft(player.id) }}
                             </div>
 
-                            <div class="mx-4 cursor-pointer rounded-lg border-2 border-slate-300 p-3 text-base hover:bg-slate-700 active:bg-slate-600" @click="gameBattlechipsStore.wallHit(player.id)">
+                            <div class="mx-4 cursor-pointer rounded-lg border-2 border-slate-300 p-2 text-base hover:bg-slate-700 active:bg-slate-600" @click="gameBattlechipsStore.wallHit(player.id)">
                                 WALL
                             </div>
                         </div>
                     </div>
                     <!-- Start battlechips grid -->
-                    <div v-for="ship in gameBattlechipsStore.getPlayerShipsByPlayerId(player.id)"
-                         :key="ship"
+                    <div v-for="shipId in gameBattlechipsStore.getOrderedPlayerShipsByPlayerId(player.id)"
+                         :key="shipId"
                          class="relative flex grow cursor-pointer flex-col items-center justify-center text-3xl font-bold transition-colors active:bg-white/5"
-                         @click="playerScoring(player.id, ship)">
-                        <span class="relative z-20">{{ ship }}</span>
+                         :class="{'pointer-events-none opacity-15': gameBattlechipsStore.checkShipDestroy(player.id, shipId)}"
+                         @click="playerScoring(player.id, shipId)">
+                        <span class="relative z-10 select-none">{{ shipId }}</span>
                         <div>
                             <!-- <span class="cross-step-0"></span> -->
-                            <span class="cross-step-1"></span>
-                            <span class="cross-step-2"></span>
-                            <span class="cross-step-3"></span>
+                            <span v-if="gameBattlechipsStore.getCountShipHit(player.id, shipId) >= 1" class="cross-step-1"></span>
+                            <span v-if="gameBattlechipsStore.getCountShipHit(player.id, shipId) >= 2" class="cross-step-2"></span>
+                            <span v-if="gameBattlechipsStore.getCountShipHit(player.id, shipId) >= 3" class="cross-step-3"></span>
                         </div>
                     </div>
                 </div>
@@ -84,9 +85,9 @@ if(gameStore.game?.isStarted == false) {
     gameBattlechipsStore.initGame()
 }
 
-function playerScoring(id:number, score: number) {
+function playerScoring(playerId:number, shipId: number) {
     // gameCricketStore.pushScore(id, score)
-    gameBattlechipsStore.pushScore(id, score)
+    gameBattlechipsStore.hitPlayerShip(playerId, shipId)
 }
 
 function goHome() {
