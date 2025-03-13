@@ -103,7 +103,7 @@ watch(gameStore, () => {
             winnerPlayer: gameStore.winner,
             scores: gameStore.game.players.map((player: Player) => ({
                 player: player,
-                score: 1
+                score: gameBattlechipsStore.getCountShipLeft(player.id).value
             }))
         })
 

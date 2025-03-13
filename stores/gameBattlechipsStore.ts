@@ -10,7 +10,7 @@ type PlayerShips = {
 
 export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
     const gameStore = useGameStore();
-    const { dartSound1, dartSound2, dartSound3, wallSound, undoSound } = useSoundEffect();
+    const { dartSound1, dartSound2, shipOut, wallSound, undoSound } = useSoundEffect();
 
     const playerIdsHistory = ref<number[]>([]);
     
@@ -127,7 +127,7 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
                 dartSound2.play();
                 break;
             case 3:
-                dartSound3.play();
+                shipOut.play();
             }
         }
 

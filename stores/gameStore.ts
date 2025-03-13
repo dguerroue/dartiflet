@@ -115,6 +115,7 @@ export const useGameStore = defineStore('game', () => {
     }
 
     function setWinner(playerId: number) {
+        useSoundEffect().winSound.play();
         winner.value = game.value?.players.find(player => player.id == playerId);
     }
 
