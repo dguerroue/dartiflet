@@ -1,9 +1,9 @@
 <template>
     <div class="flex flex-col gap-3 rounded-xl bg-slate-800 p-4 text-white">
         <div class="flex w-full justify-between">
-            <button @click="removeHistoryItem()">
+            <!-- <button @click="removeHistoryItem()">
                 <IconXmark />
-            </button>
+            </button> -->
 
             <span class="font-bold text-slate-200">{{ format(historyItem.date, dateFormat) }}</span>
 
