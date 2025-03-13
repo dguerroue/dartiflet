@@ -1,7 +1,12 @@
 <template>
     <div class="flex flex-col gap-3 rounded-xl bg-slate-800 p-4 text-white">
         <div class="flex w-full justify-between">
+            <button @click="removeHistoryItem()">
+                <IconXmark />
+            </button>
+
             <span class="font-bold text-slate-200">{{ format(historyItem.date, dateFormat) }}</span>
+
             <span class="flex items-center text-xl font-bold">
                 <IconMedal size="17" class="mr-1 text-yellow-400" />
                 {{ historyItem.winnerPlayer.name }}
@@ -25,11 +30,16 @@
 
 <script lang="ts" setup>
 import { format } from 'date-fns';
+import IconXmark from './icons/IconXmark.vue';
 
-defineProps<{
+const props = defineProps<{
     historyItem: HistoryItem,
     dateFormat: string
   }>();
+
+function removeHistoryItem() {
+    useHistoryStore().removeHistoryRecord(props.historyItem.date);
+}
 </script>
 
 <style lang="scss" scoped></style>

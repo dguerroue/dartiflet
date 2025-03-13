@@ -19,6 +19,9 @@
                 <p class="text-lg font-bold text-slate-400">
                     Aujourd'hui
                 </p>
+                <div v-if="historyStore.historyToday.length === 0" class="text-white">
+                    <p>Ils ont pas joué aujourd'hui</p>
+                </div>
                 <HistoryCard v-for="historyLine, index in historyStore.historyToday"
                              :key="index"
                              :history-item="historyLine"
@@ -29,6 +32,9 @@
                 <p class="text-lg font-bold text-slate-400">
                     Autres parties
                 </p>
+                <div v-if="historyStore.historyPast.length === 0" class="text-white">
+                    <p>Ils ont pas joué avant</p>
+                </div>
                 <HistoryCard v-for="historyLine, index in historyStore.historyPast"
                              :key="index"
                              :history-item="historyLine"

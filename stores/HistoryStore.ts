@@ -47,12 +47,20 @@ export const useHistoryStore = defineStore('history', () => {
         return history.filter((historyLine) => !isToday(historyLine.date));
     });
 
+    function removeHistoryRecord(date: Date) {
+        const index = historyList.value.findIndex((historyLine) => historyLine.date === date);
+        if (index !== -1) {
+            historyList.value.splice(index, 1);
+        }
+    }
+
     return {
         historyList,
         getHistory,
         historyToday,
         historyPast,
-        addHistoryRecord
+        addHistoryRecord,
+        removeHistoryRecord
     }
 }, {
     persist: {
