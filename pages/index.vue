@@ -23,7 +23,7 @@
         </div>
 
         <div class="flex flex-col gap-4">
-            <button v-if="gameStore.game?.isStarted" class="mb-6 rounded-lg bg-white p-4 text-sm" @click="gameStore.resumeGame()">
+            <button v-if="gameStore.game?.isStarted" class="mb-6 rounded-lg border-2 border-white bg-white p-3 text-sm hover:bg-transparent hover:text-white active:bg-transparent active:text-white" @click="gameStore.resumeGame()">
                 <span class="flex items-center justify-between">
                     Reprendre la partie en cours <IconChevronRight size="20" />
                 </span>
@@ -35,7 +35,7 @@
 
                 <select id="game-mode"
                         v-model="selectedGameModeRef"
-                        class="mt-1.5 w-full rounded-lg border-gray-300 p-3 text-gray-700  sm:text-sm">
+                        class="mt-1.5 w-full rounded-lg border-gray-300 p-3 text-slate-700 sm:text-sm">
                     <option value="" disabled>
                         Please select a game mode
                     </option>
