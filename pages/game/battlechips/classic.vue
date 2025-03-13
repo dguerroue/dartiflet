@@ -33,7 +33,7 @@
                         <div class="flex w-full items-center">
                             <div class="flex grow flex-col items-center justify-center px-3">
                                 <span class="text-nowrap capitalize">{{ player.name }}</span>
-                                {{ gameBattlechipsStore.getCountShipLeft(player.id) }}
+                                {{ gameBattlechipsStore.getCountShipLeft(player.id).value }}
                             </div>
 
                             <div class="mx-4 cursor-pointer rounded-lg border-2 border-slate-300 p-2 text-base hover:bg-slate-700 active:bg-slate-600" @click="gameBattlechipsStore.wallHit(player.id)">

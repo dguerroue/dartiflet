@@ -156,13 +156,15 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
     }
 
     function getCountShipLeft(playerId: number) {
-        const playerShips = playersShips.value.find((playerShips) => playerShips.playerId == playerId);
-
-        if(playerShips === undefined) {
-            return 0;
-        }
-
-        return playerShips.ships.length - playerShips.shipsDestroyed.length;
+        return computed(() => {
+            const playerShips = playersShips.value.find((playerShips) => playerShips.playerId == playerId);
+    
+            if(playerShips === undefined) {
+                return 0;
+            }
+    
+            return playerShips.ships.length - playerShips.shipsDestroyed.length;
+        })
     }
 
     function checkShipDestroy(playerId: number, shipId: number) {
@@ -197,6 +199,11 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
         }
 
         const popedShip = playerShips.playerShipsHitHistory.pop();
+
+        // if ship was destroyed, remove it from destroyed ships
+        if(popedShip && getCountShipHit(lastActionPlayerId, popedShip) < 3) {
+            playerShips.shipsDestroyed = playerShips.shipsDestroyed.filter(ship => ship !== popedShip);
+        }
     }
 
     return {
