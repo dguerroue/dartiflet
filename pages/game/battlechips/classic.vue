@@ -15,17 +15,16 @@
                 </button>
             </div>
         </div>
-        <div class="flex size-full grow gap-4 py-6">
-            <!-- SCORE LIST -->
-            <div class="sticky left-0 top-0 z-10 w-1/6 bg-slate-900">
-                <div class="flex size-full flex-col gap-2 text-white">
-                    <div class="mb-4 flex h-20 items-center justify-center">
-                        <button class="mx-4 cursor-pointer rounded-lg border-2 border-slate-300 p-3 text-base hover:bg-slate-700 active:bg-slate-600" @click="goHome()">
-                            <IconArrowLeft />
-                        </button>
-                    </div>
-                </div>
+
+        <!-- SCORE LIST -->
+        <div class=" self-start bg-slate-900">
+            <div class="flex h-20 items-center justify-center">
+                <button class="cursor-pointer rounded-lg border-2 border-slate-300 p-3 text-base text-white hover:bg-slate-700 active:bg-slate-600" @click="goHome()">
+                    <IconArrowLeft />
+                </button>
             </div>
+        </div>
+        <div class="flex size-full grow gap-4 py-2">
             <!-- PLAYERS SCORES -->
             <div class="no-scrollbar flex w-full gap-4 overflow-auto">
                 <div v-for="player in gameStore.game?.players" :key="player.id" class="flex size-full flex-col gap-2 text-white">
@@ -33,7 +32,7 @@
                         <div class="flex w-full items-center">
                             <div class="flex grow flex-col items-center justify-center px-3">
                                 <span class="text-nowrap capitalize">{{ player.name }}</span>
-                                {{ gameBattlechipsStore.getCountShipLeft(player.id).value }}
+                                {{ gameBattlechipsStore.getCountShipLeft(player.id).value }} chip{{ gameBattlechipsStore.getCountShipLeft(player.id).value > 1 ? 's' : '' }}
                             </div>
 
                             <div class="mx-4 cursor-pointer rounded-lg border-2 border-slate-300 p-2 text-base hover:bg-slate-700 active:bg-slate-600" @click="gameBattlechipsStore.wallHit(player.id)">
@@ -59,7 +58,6 @@
             </div>
         </div>
         <div class="flex w-full">
-            <div class="w-1/6"></div>
             <button type="button" class="mb-4 flex h-14 grow cursor-pointer flex-col items-center justify-center rounded-lg bg-slate-800 text-lg font-bold text-white active:bg-slate-600" @click="gameBattlechipsStore.undo()">
                 ANNULER
             </button>
