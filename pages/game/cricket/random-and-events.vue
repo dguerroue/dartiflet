@@ -170,6 +170,8 @@ function replayGame() {
     gameCricketStore.resetGame();
     gameCricketStore.initGame(gameStore.game?.mode.variant as CricketVariantModes)
 
+    gameFirstScore.value = false;
+
     if(gameStore.game?.isStarted === true) {
         gameEventStore.stopClock();
 
