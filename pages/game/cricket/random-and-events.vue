@@ -150,6 +150,7 @@ watch(gameStore, () => {
         jsConfetti.addConfetti();
 
         gameEventStore.stopClock();
+        gameStore.stopGame();
       
         // push history record
         historyStore.addHistoryRecord({
@@ -161,8 +162,6 @@ watch(gameStore, () => {
                 score: gameCricketStore.getScorePointsByPlayerId(player.id)
             }))
         })
-
-        gameStore.stopGame();
     }
 })
 
@@ -171,12 +170,6 @@ function replayGame() {
     gameCricketStore.initGame(gameStore.game?.mode.variant as CricketVariantModes)
 
     gameFirstScore.value = false;
-
-    if(gameStore.game?.isStarted === true) {
-        gameEventStore.stopClock();
-
-        initRandomEventLoop();
-    }
 }
 
 onBeforeUnmount(() => {

@@ -21,6 +21,10 @@ export const useGameEventStore = defineStore('gameEvent', () => {
     const { newEventSound } = useSoundEffect();
 
     function startClock() {
+        if(clockIntervalId.value) {
+            console.warn('Clock already started');
+            return;
+        }
         clockIntervalId.value = setInterval(() => {
             clockValue.value += 1;
 
@@ -55,10 +59,8 @@ export const useGameEventStore = defineStore('gameEvent', () => {
      * Stop the clock and reset event values
      */
     function stopClock() {
-        console.log('Stop clock and reset event values');
-        if(clockIntervalId.value) {
-            clearInterval(clockIntervalId.value);
-        }
+        clearInterval(clockIntervalId.value);
+        clockIntervalId.value = undefined;
 
         clockValue.value = 0;
         stopAndResetEvent();
