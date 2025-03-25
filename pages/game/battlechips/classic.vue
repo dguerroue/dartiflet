@@ -24,34 +24,54 @@
                 </button>
             </div>
         </div>
-        <div class="flex size-full grow gap-4 py-2">
+        <div class="mb-4 flex size-full grow gap-4">
             <!-- PLAYERS SCORES -->
             <div class="no-scrollbar flex w-full gap-4 overflow-auto">
-                <div v-for="player in gameStore.game?.players" :key="player.id" class="flex size-full flex-col gap-2 text-white">
-                    <div class="mb-4 flex h-20 w-full rounded-lg bg-slate-800 text-lg font-bold">
-                        <div class="flex w-full items-center">
-                            <div class="flex grow flex-col items-center justify-center px-3">
-                                <span class="text-nowrap capitalize">{{ player.name }}</span>
-                                {{ gameBattlechipsStore.getCountShipLeft(player.id).value }} chip{{ gameBattlechipsStore.getCountShipLeft(player.id).value > 1 ? 's' : '' }}
-                            </div>
+                <div v-for="player in gameStore.game?.players" :key="player.id" class="flex size-full flex-col gap-4 text-white">
+                    <div class="flex size-full h-20 w-full shrink-0 items-center justify-between rounded-lg bg-slate-800 text-lg font-bold">
+                        <div class="mx-5 flex flex-col items-center gap-1">
+                            <IconShield />
+                            <!-- <IconShieldSlash size="28" /> -->
+                            <span class="text-xl">{{ gameBattlechipsStore.getShieldByPlayerId(player.id)?.shieldValue }}</span>
+                        </div>
+                        
+                        <span class="text-nowrap capitalize">{{ player.name }}</span>
 
-                            <div class="mx-4 cursor-pointer rounded-lg border-2 border-slate-300 p-2 text-base hover:bg-slate-700 active:bg-slate-600" @click="gameBattlechipsStore.wallHit(player.id)">
-                                WALL
+                        <!-- <div class="flex grow items-center justify-center px-3">
+                            {{ gameBattlechipsStore.getCountShipLeft(player.id).value }} chip{{ gameBattlechipsStore.getCountShipLeft(player.id).value > 1 ? 's' : '' }}
+                        </div> -->
+
+                        <div class="mx-4 cursor-pointer rounded-lg border-2 border-slate-300 p-2 text-base hover:bg-slate-700 active:bg-slate-600" @click="gameBattlechipsStore.wallHit(player.id)">
+                            WALL
+                        </div>
+                    </div>
+
+                    <!-- Start shield grid -->
+                    <div v-if="gameBattlechipsStore.getShieldByPlayerId(player.id)?.shieldActive" class="relative h-full ">
+                        <div class="absolute left-0 top-0 flex size-full flex-col gap-2 overflow-y-scroll">
+                            <div class="flex shrink-0 cursor-pointer items-center justify-center py-5 text-3xl font-bold active:bg-white/5">
+                                25
+                            </div>
+                            <div v-for="i in 20" :key="i" class="flex shrink-0 cursor-pointer items-center justify-center py-5 text-3xl font-bold active:bg-white/5">
+                                {{ 21-i }}
                             </div>
                         </div>
                     </div>
+
                     <!-- Start battlechips grid -->
-                    <div v-for="shipId in gameBattlechipsStore.getOrderedPlayerShipsByPlayerId(player.id)"
-                         :key="shipId"
-                         class="relative flex grow cursor-pointer flex-col items-center justify-center text-3xl font-bold transition-colors active:bg-white/5"
-                         :class="{'pointer-events-none opacity-15': gameBattlechipsStore.checkShipDestroy(player.id, shipId)}"
-                         @click="playerScoring(player.id, shipId)">
-                        <span class="relative z-10 select-none">{{ shipId }}</span>
-                        <div>
-                            <!-- <span class="cross-step-0"></span> -->
-                            <span v-if="gameBattlechipsStore.getCountShipHit(player.id, shipId) >= 1" class="cross-step-1"></span>
-                            <span v-if="gameBattlechipsStore.getCountShipHit(player.id, shipId) >= 2" class="cross-step-2"></span>
-                            <span v-if="gameBattlechipsStore.getCountShipHit(player.id, shipId) >= 3" class="cross-step-3"></span>
+                    <div v-else>
+                        <div v-for="shipId in gameBattlechipsStore.getOrderedPlayerShipsByPlayerId(player.id)"
+                             :key="shipId"
+                             class="relative flex grow cursor-pointer flex-col items-center justify-center text-3xl font-bold transition-colors active:bg-white/5"
+                             :class="{'pointer-events-none opacity-15': gameBattlechipsStore.checkShipDestroy(player.id, shipId)}"
+                             @click="playerScoring(player.id, shipId)">
+                            <span class="relative z-10 select-none">{{ shipId }}</span>
+                            <div>
+                                <!-- <span class="cross-step-0"></span> -->
+                                <span v-if="gameBattlechipsStore.getCountShipHit(player.id, shipId) >= 1" class="cross-step-1"></span>
+                                <span v-if="gameBattlechipsStore.getCountShipHit(player.id, shipId) >= 2" class="cross-step-2"></span>
+                                <span v-if="gameBattlechipsStore.getCountShipHit(player.id, shipId) >= 3" class="cross-step-3"></span>
+                            </div>
                         </div>
                     </div>
                 </div>

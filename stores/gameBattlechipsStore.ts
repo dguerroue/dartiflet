@@ -8,6 +8,13 @@ type PlayerShips = {
     playerShipsHitHistory: number[]
 }
 
+type PlayerShield = {
+    playerId: number,
+    shieldActive: boolean,
+    shieldHitHistory: number[]
+    shieldValue: number
+}
+
 export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
     const gameStore = useGameStore();
     const { dartSound1, dartSound2, dartSound3, shipOut, wallSound, undoSound } = useSoundEffect();
@@ -16,6 +23,9 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
     
     const playersLoosers = ref<number[]>([]);
     const playersShips = ref<PlayerShips[]>([]);
+
+    // const playersShieldsMap = ref<Map<number, PlayerShield>>(new Map());
+    const playersShields = ref<PlayerShield[]>([]);
 
     function generateShips(numPlayers: number) {
         // if 2 players, 6 ships
@@ -55,6 +65,22 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
         
         generateShips(gameStore.game.players.length);
 
+        // initialize players shields
+        gameStore.game.players.forEach(player => {
+            // playersShieldsMap.value.set(player.id, {
+            //     shieldActive: true,
+            //     shieldHitHistory: [],
+            //     shieldValue: 101
+            // });
+
+            playersShields.value.push({
+                playerId: player.id,
+                shieldActive: true,
+                shieldHitHistory: [],
+                shieldValue: 101
+            });
+        });
+
         gameStore.startGame();
     }
 
@@ -70,6 +96,11 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
         }
         
         return playerShips.ships.sort((a, b) => b - a);
+    }
+
+    function getShieldByPlayerId(playerId: number): PlayerShield | undefined {
+        // return playersShieldsMap.value.get(playerId);
+        return playersShields.value.find(ps => ps.playerId == playerId);
     }
 
     function resetGame() {
@@ -210,9 +241,11 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
     return {
         playerIdsHistory,
         playersShips,
+        playersShields,
         initGame,
         resetGame,
         getOrderedPlayerShipsByPlayerId,
+        getShieldByPlayerId,
         hitPlayerShip,
         getCountShipHit,
         getCountShipLeft,
