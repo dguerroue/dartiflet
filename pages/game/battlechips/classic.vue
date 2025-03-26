@@ -29,9 +29,9 @@
             <div class="no-scrollbar flex w-full gap-4 overflow-auto">
                 <div v-for="player in gameStore.game?.players" :key="player.id" class="flex size-full flex-col gap-4 text-white">
                     <div class="flex size-full h-20 w-full shrink-0 items-center justify-between rounded-lg bg-slate-800 text-lg font-bold">
-                        <div class="mx-5 flex flex-col items-center gap-1">
-                            <IconShield />
-                            <!-- <IconShieldSlash size="28" /> -->
+                        <div class="mx-5 flex w-8 flex-col items-center gap-1">
+                            <IconShield v-if="gameBattlechipsStore.getShieldByPlayerId(player.id)?.shieldActive" />
+                            <IconShieldSlash v-else size="28" />
                             <span class="text-xl">{{ gameBattlechipsStore.getShieldByPlayerId(player.id)?.shieldValue }}</span>
                         </div>
                         
@@ -47,22 +47,28 @@
                     </div>
 
                     <!-- Start shield grid -->
-                    <div v-if="gameBattlechipsStore.getShieldByPlayerId(player.id)?.shieldActive" class="relative h-full ">
+                    <div v-if="gameBattlechipsStore.getShieldByPlayerId(player.id)?.shieldActive" class="relative h-full rounded-lg border-4 border-white">
                         <div class="absolute left-0 top-0 flex size-full flex-col gap-2 overflow-y-scroll">
-                            <div class="flex shrink-0 cursor-pointer items-center justify-center py-5 text-3xl font-bold active:bg-white/5">
-                                25
-                            </div>
-                            <div v-for="i in 20" :key="i" class="flex shrink-0 cursor-pointer items-center justify-center py-5 text-3xl font-bold active:bg-white/5">
-                                {{ 21-i }}
+                            <div v-for="i in [...(Array(20).keys().map(v => ++v)), 25].reverse()"
+                                 :key="i"
+                                 class="flex shrink-0 cursor-pointer items-center justify-center py-5 text-3xl font-bold active:bg-white/5"
+                                 @click="playerScoring(player.id, i)">
+                                {{ i }}
                             </div>
                         </div>
                     </div>
 
                     <!-- Start battlechips grid -->
-                    <div v-else>
+                    <div v-else class="flex h-full flex-col border-4 border-transparent">
+                        <div class="relative flex grow cursor-pointer items-center justify-center text-3xl font-bold transition-colors active:bg-white/5" @click="playerAddShield(player.id)">
+                            <span class="relative z-10 flex select-none items-center justify-center text-sm">
+                                <IconShield class="absolute" size="42" />
+                                25
+                            </span>
+                        </div>
                         <div v-for="shipId in gameBattlechipsStore.getOrderedPlayerShipsByPlayerId(player.id)"
                              :key="shipId"
-                             class="relative flex grow cursor-pointer flex-col items-center justify-center text-3xl font-bold transition-colors active:bg-white/5"
+                             class="relative flex grow cursor-pointer items-center justify-center text-3xl font-bold transition-colors active:bg-white/5"
                              :class="{'pointer-events-none opacity-15': gameBattlechipsStore.checkShipDestroy(player.id, shipId)}"
                              @click="playerScoring(player.id, shipId)">
                             <span class="relative z-10 select-none">{{ shipId }}</span>
@@ -103,9 +109,20 @@ if(gameStore.game?.isStarted == false) {
     gameBattlechipsStore.initGame()
 }
 
-function playerScoring(playerId:number, shipId: number) {
+function playerAddShield(playerId: number) {
+    gameBattlechipsStore.addPlayerShield(playerId)
+}
+
+function playerScoring(playerId:number, value: number) {
     // gameCricketStore.pushScore(id, score)
-    gameBattlechipsStore.hitPlayerShip(playerId, shipId)
+
+    // si j'ai un bouclier actif
+    if(gameBattlechipsStore.getShieldByPlayerId(playerId)?.shieldActive) {
+        gameBattlechipsStore.hitPlayerShield(playerId, value)
+        return;
+    } else {
+        gameBattlechipsStore.hitPlayerShip(playerId, value)
+    }
 }
 
 function goHome() {

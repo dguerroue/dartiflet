@@ -50,6 +50,8 @@ export const useHistoryStore = defineStore('history', () => {
     function removeHistoryRecord(date: Date) {
         const index = historyList.value.findIndex((historyLine) => historyLine.date === date);
         if (index !== -1) {
+            useSoundEffect().undoSound.play();
+
             historyList.value.splice(index, 1);
         }
     }

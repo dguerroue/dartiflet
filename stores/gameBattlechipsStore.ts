@@ -17,7 +17,7 @@ type PlayerShield = {
 
 export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
     const gameStore = useGameStore();
-    const { dartSound1, dartSound2, dartSound3, shipOut, wallSound, undoSound } = useSoundEffect();
+    const soundEffect = useSoundEffect();
 
     const playerIdsHistory = ref<number[]>([]);
     
@@ -67,12 +67,6 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
 
         // initialize players shields
         gameStore.game.players.forEach(player => {
-            // playersShieldsMap.value.set(player.id, {
-            //     shieldActive: true,
-            //     shieldHitHistory: [],
-            //     shieldValue: 101
-            // });
-
             playersShields.value.push({
                 playerId: player.id,
                 shieldActive: true,
@@ -109,6 +103,7 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
         playerIdsHistory.value = [];
         playersLoosers.value = [];
         playersShips.value = [];
+        playersShields.value = [];
     }
 
     // function checkClosedScore(score: number) {
@@ -138,6 +133,44 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
         }
     }
 
+    function hitPlayerShield(playerId: number, value: number) {
+        const playerShield = getShieldByPlayerId(playerId);
+
+        if(playerShield === undefined) {
+            return;
+        }
+
+        if(value > playerShield.shieldValue) {
+            console.warn('Shield value can\'t be negative');
+            soundEffect.dartSound3.play();
+            // TODO: disable higher values
+            return;
+        }
+
+        soundEffect.dartSound1.play();
+        playerShield.shieldValue -= value;
+        playerShield.shieldHitHistory.push(value);
+
+        if(playerShield.shieldValue <= 0) {
+            soundEffect.shipOut.play();
+            playerShield.shieldActive = false;
+            playerShield.shieldValue = 0;
+        }
+    }
+
+    function addPlayerShield(playerId: number) {
+        const playerShield = getShieldByPlayerId(playerId);
+
+        if(playerShield === undefined) {
+            return;
+        }
+
+        soundEffect.dartSound1.play();
+        soundEffect.newEventSound.play();
+        playerShield.shieldActive = true;
+        playerShield.shieldValue = 101;
+    }
+
     function hitPlayerShip(playerId: number, shipId: number, noSounds: boolean = false) {
         if(checkShipDestroy(playerId, shipId)) {
             return;
@@ -152,14 +185,14 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
         if(noSounds == false) {
             switch(getCountShipHit(playerId, shipId)) {
             case 1:
-                dartSound1.play();
+                soundEffect.dartSound1.play();
                 break;
             case 2:
-                dartSound2.play();
+                soundEffect.dartSound2.play();
                 break;
             case 3:
-                dartSound3.play();
-                shipOut.play();
+                soundEffect.dartSound3.play();
+                soundEffect.shipOut.play();
             }
         }
 
@@ -210,13 +243,13 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
     }
 
     function wallHit(playerId: number) {
-        wallSound.play();
+        soundEffect.wallSound.play();
     }
 
 
 
     function undo() {
-        undoSound.play();
+        soundEffect.undoSound.play();
 
         const lastActionPlayerId = playerIdsHistory.value.pop();
 
@@ -246,6 +279,8 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
         resetGame,
         getOrderedPlayerShipsByPlayerId,
         getShieldByPlayerId,
+        addPlayerShield,
+        hitPlayerShield,
         hitPlayerShip,
         getCountShipHit,
         getCountShipLeft,
