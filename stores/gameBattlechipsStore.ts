@@ -20,6 +20,7 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
     const soundEffect = useSoundEffect();
 
     const playerIdsHistory = ref<number[]>([]);
+    let scoreTypeHistory: Array<"ship" | "shield"> = []
     
     const playersLoosers = ref<number[]>([]);
     const playersShips = ref<PlayerShips[]>([]);
@@ -78,6 +79,16 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
         gameStore.startGame();
     }
 
+    function getAliveShipsByPlayerId(playerId: number): number[] | undefined {
+        const playerShips = playersShips.value.find((playerShips) => playerShips.playerId == playerId);
+
+        if(playerShips === undefined) {
+            return;
+        }
+
+        return playerShips.ships.filter(ship => !playerShips.shipsDestroyed.includes(ship));
+    }
+
     function getOrderedPlayerShipsByPlayerId(playerId: number): number[] | undefined {
 
         // return all ships number in order
@@ -101,6 +112,7 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
         gameStore.resetGame();
 
         playerIdsHistory.value = [];
+        scoreTypeHistory = [];
         playersLoosers.value = [];
         playersShips.value = [];
         playersShields.value = [];
@@ -149,6 +161,9 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
 
         soundEffect.dartSound1.play();
         playerShield.shieldValue -= value;
+
+        playerIdsHistory.value.push(playerId);
+        scoreTypeHistory.push('shield');
         playerShield.shieldHitHistory.push(value);
 
         if(playerShield.shieldValue <= 0) {
@@ -158,7 +173,7 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
         }
     }
 
-    function addPlayerShield(playerId: number) {
+    function addPlayerShield(playerId: number, value: number = 25) {
         const playerShield = getShieldByPlayerId(playerId);
 
         if(playerShield === undefined) {
@@ -168,7 +183,7 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
         soundEffect.dartSound1.play();
         soundEffect.newEventSound.play();
         playerShield.shieldActive = true;
-        playerShield.shieldValue = 101;
+        playerShield.shieldValue += value;
     }
 
     function hitPlayerShip(playerId: number, shipId: number, noSounds: boolean = false) {
@@ -179,6 +194,7 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
         const playerShips = playersShips.value.find((playerShips) => playerShips.playerId == playerId);
 
         playerIdsHistory.value.push(playerId);
+        scoreTypeHistory.push('ship');
         playerShips?.playerShipsHitHistory.push(shipId);
 
         // sounds effects
@@ -244,6 +260,32 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
 
     function wallHit(playerId: number) {
         soundEffect.wallSound.play();
+
+        //if player has shield, hit shield
+        const playerShield = getShieldByPlayerId(playerId);
+
+        if(playerShield?.shieldActive) {
+
+            if(playerShield.shieldValue < 25) {
+                soundEffect.shipOut.play();
+                playerShield.shieldActive = false;
+                playerShield.shieldValue = 0;
+                return;
+            }
+
+            hitPlayerShield(playerId, 25);
+            return;
+        }
+
+        // if player has no shield, hit ship randomly
+        const playerShips = getAliveShipsByPlayerId(playerId);
+
+        if(playerShips === undefined) {
+            return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * playerShips.length);
+        hitPlayerShip(playerId, playerShips[randomIndex], true);
     }
 
 
@@ -263,12 +305,34 @@ export const useGameBattleshipsStore = defineStore('gameBattleships', () => {
             return;
         }
 
-        const popedShip = playerShips.playerShipsHitHistory.pop();
+        const poppedHistoryType = scoreTypeHistory.pop();
 
-        // if ship was destroyed, remove it from destroyed ships
-        if(popedShip && getCountShipHit(lastActionPlayerId, popedShip) < 3) {
-            playerShips.shipsDestroyed = playerShips.shipsDestroyed.filter(ship => ship !== popedShip);
+        if(poppedHistoryType === 'shield') {
+            const popedShield = playersShields.value.find(ps => ps.playerId == lastActionPlayerId);
+
+            if(popedShield === undefined) {
+                return;
+            }
+
+            const poppedShieldHit = popedShield.shieldHitHistory.pop();
+
+            if(poppedShieldHit === undefined) {
+                return;
+            }
+
+            popedShield.shieldValue += poppedShieldHit;
+            popedShield.shieldActive = true;
         }
+        else if(poppedHistoryType === 'ship') {
+            const popedShip = playerShips.playerShipsHitHistory.pop();
+    
+            // if ship was destroyed, remove it from destroyed ships
+            if(popedShip && getCountShipHit(lastActionPlayerId, popedShip) < 3) {
+                playerShips.shipsDestroyed = playerShips.shipsDestroyed.filter(ship => ship !== popedShip);
+            }
+        }
+
+
     }
 
     return {

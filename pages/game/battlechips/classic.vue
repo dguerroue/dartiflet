@@ -29,13 +29,25 @@
             <div class="no-scrollbar flex w-full gap-4 overflow-auto">
                 <div v-for="player in gameStore.game?.players" :key="player.id" class="flex size-full flex-col gap-4 text-white">
                     <div class="flex size-full h-20 w-full shrink-0 items-center justify-between rounded-lg bg-slate-800 text-lg font-bold">
-                        <div class="mx-5 flex w-8 flex-col items-center gap-1">
+                        <!-- <div class="mx-5 flex w-8 flex-col items-center gap-1">
                             <IconShield v-if="gameBattlechipsStore.getShieldByPlayerId(player.id)?.shieldActive" />
                             <IconShieldSlash v-else size="28" />
                             <span class="text-xl">{{ gameBattlechipsStore.getShieldByPlayerId(player.id)?.shieldValue }}</span>
+                        </div> -->
+
+                        <div class="relative z-10 mx-5 flex w-8 cursor-pointer select-none flex-col items-center justify-center gap-1 text-sm transition-transform active:scale-90" @click="playerAddShield(player.id)">
+                            <IconShield class="absolute text-white" size="42" />
+                            25
                         </div>
                         
-                        <span class="text-nowrap capitalize">{{ player.name }}</span>
+                        <div class="text-center">
+                            <span class="text-nowrap text-sm capitalize">{{ player.name }}</span>
+                            <span class="flex items-center gap-2">
+                                <IconShield v-if="gameBattlechipsStore.getShieldByPlayerId(player.id)?.shieldActive" size="20" />
+                                <IconShieldSlash v-else size="22" />
+                                <span class="text-3xl">{{ gameBattlechipsStore.getShieldByPlayerId(player.id)?.shieldValue }}</span>
+                            </span>
+                        </div>
 
                         <!-- <div class="flex grow items-center justify-center px-3">
                             {{ gameBattlechipsStore.getCountShipLeft(player.id).value }} chip{{ gameBattlechipsStore.getCountShipLeft(player.id).value > 1 ? 's' : '' }}
@@ -52,6 +64,7 @@
                             <div v-for="i in [...(Array(20).keys().map(v => ++v)), 25].reverse()"
                                  :key="i"
                                  class="flex shrink-0 cursor-pointer items-center justify-center py-5 text-3xl font-bold active:bg-white/5"
+                                 :class="gameBattlechipsStore.getShieldByPlayerId(player.id)!.shieldValue < i ? 'text-slate-500' : ''"
                                  @click="playerScoring(player.id, i)">
                                 {{ i }}
                             </div>
@@ -60,12 +73,6 @@
 
                     <!-- Start battlechips grid -->
                     <div v-else class="flex h-full flex-col border-4 border-transparent">
-                        <div class="relative flex grow cursor-pointer items-center justify-center text-3xl font-bold transition-colors active:bg-white/5" @click="playerAddShield(player.id)">
-                            <span class="relative z-10 flex select-none items-center justify-center text-sm">
-                                <IconShield class="absolute" size="42" />
-                                25
-                            </span>
-                        </div>
                         <div v-for="shipId in gameBattlechipsStore.getOrderedPlayerShipsByPlayerId(player.id)"
                              :key="shipId"
                              class="relative flex grow cursor-pointer items-center justify-center text-3xl font-bold transition-colors active:bg-white/5"
@@ -110,7 +117,7 @@ if(gameStore.game?.isStarted == false) {
 }
 
 function playerAddShield(playerId: number) {
-    gameBattlechipsStore.addPlayerShield(playerId)
+    gameBattlechipsStore.addPlayerShield(playerId, 25)
 }
 
 function playerScoring(playerId:number, value: number) {
