@@ -2,8 +2,8 @@ import { defineStore } from 'pinia'
 import type { Player } from './playerStore';
 
 export type GameMode = {
-    mode: 'cricket' | 'battlechips',
-    variants: ('random-and-events' | 'classic' | 'random')[],
+    mode: 'cricket' | 'battlechips' | 'X01',
+    variants: ('random-and-events' | 'classic' | 'random' | '301')[],
 };
 
 export type Game = {
@@ -28,6 +28,10 @@ export const useGameStore = defineStore('game', () => {
         {
             mode: 'battlechips',
             variants: ['classic'],
+        },
+        {
+            mode: 'X01',
+            variants: ['301'],
         }
     ];
 
@@ -69,6 +73,14 @@ export const useGameStore = defineStore('game', () => {
                 })
             }
         }
+
+        if(params.mode == 'X01') {
+            if(params.variant == '301') {
+                navigateTo({
+                    path: '/game/x01/classic',
+                })
+            }
+        }
     }
 
     function resumeGame() {
@@ -97,6 +109,14 @@ export const useGameStore = defineStore('game', () => {
                 if(game.value.mode.variant == 'classic') {
                     navigateTo({
                         path: '/game/battlechips/classic',
+                    })
+                }
+            }
+
+            if(game.value?.mode.mode == 'X01') {
+                if(game.value.mode.variant == '301') {
+                    navigateTo({
+                        path: '/game/x01/classic',
                     })
                 }
             }
