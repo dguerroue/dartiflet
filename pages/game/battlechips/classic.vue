@@ -63,10 +63,19 @@
                         <div class="absolute left-0 top-0 flex size-full flex-col gap-2 overflow-y-scroll">
                             <div v-for="i in [...(Array(20).keys().map(v => ++v)), 25].reverse()"
                                  :key="i"
-                                 class="flex shrink-0 cursor-pointer items-center justify-center py-5 text-3xl font-bold active:bg-white/5"
-                                 :class="gameBattlechipsStore.getShieldByPlayerId(player.id)!.shieldValue < i ? 'text-slate-500' : ''"
-                                 @click="playerScoring(player.id, i)">
-                                {{ i }}
+                                 class="flex shrink-0 cursor-pointer items-center text-center text-3xl font-bold *:flex-1">
+                                <div class="py-5 active:bg-white/5" :class="gameBattlechipsStore.getShieldByPlayerId(player.id)!.shieldValue < i ? 'text-slate-500' : 'text-white'" @click="playerScoring(player.id, i)">
+                                    {{ i }}
+                                </div>
+                                <div class="py-5 active:bg-white/5" :class="gameBattlechipsStore.getShieldByPlayerId(player.id)!.shieldValue < i*2 ? 'text-slate-500' : 'text-white'" @click="playerScoring(player.id, i*2)">
+                                    D{{ i }}
+                                </div>
+                                <div v-if="i !== 25"
+                                     class="py-5 active:bg-white/5"
+                                     :class="gameBattlechipsStore.getShieldByPlayerId(player.id)!.shieldValue < i*3 ? 'text-slate-500' : 'text-white'"
+                                     @click="playerScoring(player.id, i*3)">
+                                    T{{ i }}
+                                </div>
                             </div>
                         </div>
                     </div>
