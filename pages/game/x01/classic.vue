@@ -50,6 +50,7 @@
                                 <div class="py-5 active:bg-white/5" :class="[gameX01Store.getScoreByPlayerId(player.id)!.scoreValue < i*2 ? 'text-slate-500' : 'text-white', gameX01Store.getScoreByPlayerId(player.id)!.scoreValue == i*2 ? 'bg-amber-500': '']" @click="playerScoring(player.id, i*2)">
                                     D{{ i }}
                                 </div>
+                                <div v-if="i == 25"></div>
                                 <div v-if="i !== 25"
                                      class="py-5 active:bg-white/5"
                                      :class="[gameX01Store.getScoreByPlayerId(player.id)!.scoreValue < i*3 ? 'text-slate-500' : 'text-white', gameX01Store.getScoreByPlayerId(player.id)!.scoreValue == i*3 ? 'bg-amber-500': '']"

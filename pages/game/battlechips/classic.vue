@@ -70,6 +70,7 @@
                                 <div class="py-5 active:bg-white/5" :class="gameBattlechipsStore.getShieldByPlayerId(player.id)!.shieldValue < i*2 ? 'text-slate-500' : 'text-white'" @click="playerScoring(player.id, i*2)">
                                     D{{ i }}
                                 </div>
+                                <div v-if="i == 25"></div>
                                 <div v-if="i !== 25"
                                      class="py-5 active:bg-white/5"
                                      :class="gameBattlechipsStore.getShieldByPlayerId(player.id)!.shieldValue < i*3 ? 'text-slate-500' : 'text-white'"
